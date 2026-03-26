@@ -1,0 +1,562 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< com.platform:classroom-engagement >------------------
+[INFO] Building classroom-engagement 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ classroom-engagement ---
+[INFO] Deleting C:\anti\classroom-platform\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ classroom-engagement ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ classroom-engagement ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 35 source files with javac [debug release 17] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[41,37] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[49,37] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[55,45] cannot find symbol
+  symbol:   method getAttendance()
+  location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[60,45] cannot find symbol
+  symbol:   method getParticipation()
+  location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[66,92] cannot find symbol
+  symbol:   method getTest()
+  location: variable submission of type com.platform.models.TestSubmission
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[67,60] invalid method reference
+  cannot find symbol
+    symbol:   method getScore(T)
+    location: class com.platform.models.TestSubmission
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[68,27] cannot find symbol
+  symbol:   method getScore()
+  location: variable submission of type com.platform.models.TestSubmission
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[76,35] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[76,77] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[86,41] cannot find symbol
+  symbol:   method getAssignmentStatus()
+  location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[86,83] cannot find symbol
+  symbol:   variable AssignmentStatus
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[95,49] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[95,91] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[96,45] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[96,87] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[106,59] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[107,58] cannot find symbol
+  symbol:   method getEngagementScore()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[125,78] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[125,93] cannot find symbol
+  symbol:   method getId()
+  location: variable badge of type com.platform.models.Badge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[126,51] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[39,85] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.dto.EngagementDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[40,35] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[41,37] cannot find symbol
+  symbol:   method getName()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[42,69] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[43,71] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[45,39] cannot find symbol
+  symbol:   method getStudent()
+  location: variable a of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[45,75] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[46,34] incompatible types: inference variable T has incompatible bounds
+    equality constraints: com.platform.dto.EngagementDTO
+    lower bounds: java.lang.Object
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[53,42] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.dto.EngagementDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[54,35] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[55,37] cannot find symbol
+  symbol:   method getName()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[59,39] cannot find symbol
+  symbol:   method getStudent()
+  location: variable a of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[73,13] cannot find symbol
+  symbol:   method setTeacher(com.platform.models.User)
+  location: variable test of type com.platform.models.WeeklyTest
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[79,92] cannot find symbol
+  symbol:   method getId()
+  location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[27,25] cannot find symbol
+  symbol:   class AssignmentStatus
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[27,68] cannot find symbol
+  symbol:   variable AssignmentStatus
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[30,39] cannot find symbol
+  symbol:   variable AssignmentStatus
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[32,44] cannot find symbol
+  symbol:   variable AssignmentStatus
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[37,51] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/TestService.java:[42,33] cannot find symbol
+  symbol:   method getMarksPerQuestion()
+  location: variable test of type com.platform.models.WeeklyTest
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/TestService.java:[45,51] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.models.TestSubmission
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/TestService.java:[57,49] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/FeedbackService.java:[17,37] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.models.Feedback
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/SelfAssessmentService.java:[21,19] cannot find symbol
+  symbol:   method setSubmittedAt(java.time.LocalDateTime)
+  location: variable assessment of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/SelfAssessmentService.java:[25,52] cannot find symbol
+  symbol:   method getStudent()
+  location: variable assessment of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/SelfAssessmentService.java:[44,19] cannot find symbol
+  symbol:   method setTeacherNote(java.lang.String)
+  location: variable assessment of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/AuthService.java:[36,75] cannot find symbol
+  symbol:   method getEmail()
+  location: variable user of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/AuthService.java:[36,92] cannot find symbol
+  symbol:   method getPassword()
+  location: variable user of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/AuthService.java:[49,45] cannot find symbol
+  symbol:   method getPassword()
+  location: variable user of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[35,85] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.dto.EngagementDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[36,35] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[37,37] cannot find symbol
+  symbol:   method getName()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[38,69] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[39,71] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[41,39] cannot find symbol
+  symbol:   method getStudent()
+  location: variable a of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[41,75] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[42,34] incompatible types: inference variable T has incompatible bounds
+    equality constraints: com.platform.dto.EngagementDTO
+    lower bounds: java.lang.Object
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[35,102] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[38,77] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[45,42] cannot find symbol
+  symbol:   method isShowLeaderboardName()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[40,48] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.dto.LeaderboardDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[41,41] cannot find symbol
+  symbol:   method isShowLeaderboardName()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[41,75] cannot find symbol
+  symbol:   method getName()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[41,109] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[44,43] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[50,53] invalid method reference
+  cannot find symbol
+    symbol:   method getEngagementScore()
+    location: class com.platform.dto.LeaderboardDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[53,31] cannot find symbol
+  symbol:   method setRank(int)
+  location: class com.platform.dto.LeaderboardDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[61,16] cannot find symbol
+  symbol:   method setShowLeaderboardName(boolean)
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[40,98] cannot find symbol
+  symbol:   method getId()
+  location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[46,42] cannot find symbol
+  symbol:   method builder()
+  location: class com.platform.dto.EngagementDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[47,35] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[48,37] cannot find symbol
+  symbol:   method getName()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[49,69] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[50,71] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[52,39] cannot find symbol
+  symbol:   method getStudent()
+  location: variable a of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[52,75] cannot find symbol
+  symbol:   method getId()
+  location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[64,102] cannot find symbol
+  symbol:   method getAnswers()
+  location: variable answers of type com.platform.dto.TestSubmissionDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[69,54] cannot find symbol
+  symbol:   method getId()
+  location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[75,27] cannot find symbol
+  symbol:   method getBadge()
+  location: variable sb of type com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[76,34] cannot find symbol
+  symbol:   method getBadge()
+  location: variable sb of type com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[77,27] cannot find symbol
+  symbol:   method getBadge()
+  location: variable sb of type com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[78,31] cannot find symbol
+  symbol:   method getEarnedAt()
+  location: variable sb of type com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[79,16] cannot find symbol
+  symbol:   method setEarned(boolean)
+  location: variable dto of type com.platform.dto.BadgeDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[87,96] cannot find symbol
+  symbol:   method getId()
+  location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[92,70] cannot find symbol
+  symbol:   method getId()
+  location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[99,92] cannot find symbol
+  symbol:   method getId()
+  location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[104,19] cannot find symbol
+  symbol:   method setStudent(com.platform.models.User)
+  location: variable assessment of type com.platform.models.SelfAssessment
+[INFO] 87 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.407 s
+[INFO] Finished at: 2026-03-23T10:16:10+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project classroom-engagement: Compilation failure: Compilation failure: 
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[41,37] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[49,37] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[55,45] cannot find symbol
+[ERROR]   symbol:   method getAttendance()
+[ERROR]   location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[60,45] cannot find symbol
+[ERROR]   symbol:   method getParticipation()
+[ERROR]   location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[66,92] cannot find symbol
+[ERROR]   symbol:   method getTest()
+[ERROR]   location: variable submission of type com.platform.models.TestSubmission
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[67,60] invalid method reference
+[ERROR]   cannot find symbol
+[ERROR]     symbol:   method getScore(T)
+[ERROR]     location: class com.platform.models.TestSubmission
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[68,27] cannot find symbol
+[ERROR]   symbol:   method getScore()
+[ERROR]   location: variable submission of type com.platform.models.TestSubmission
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[76,35] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[76,77] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[86,41] cannot find symbol
+[ERROR]   symbol:   method getAssignmentStatus()
+[ERROR]   location: variable r of type com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[86,83] cannot find symbol
+[ERROR]   symbol:   variable AssignmentStatus
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[95,49] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[95,91] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[96,45] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[96,87] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[106,59] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[107,58] cannot find symbol
+[ERROR]   symbol:   method getEngagementScore()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[125,78] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[125,93] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable badge of type com.platform.models.Badge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/BadgeService.java:[126,51] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[39,85] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.dto.EngagementDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[40,35] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[41,37] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[42,69] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[43,71] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[45,39] cannot find symbol
+[ERROR]   symbol:   method getStudent()
+[ERROR]   location: variable a of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[45,75] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[46,34] incompatible types: inference variable T has incompatible bounds
+[ERROR]     equality constraints: com.platform.dto.EngagementDTO
+[ERROR]     lower bounds: java.lang.Object
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[53,42] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.dto.EngagementDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[54,35] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[55,37] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[59,39] cannot find symbol
+[ERROR]   symbol:   method getStudent()
+[ERROR]   location: variable a of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[73,13] cannot find symbol
+[ERROR]   symbol:   method setTeacher(com.platform.models.User)
+[ERROR]   location: variable test of type com.platform.models.WeeklyTest
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/TeacherController.java:[79,92] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[27,25] cannot find symbol
+[ERROR]   symbol:   class AssignmentStatus
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[27,68] cannot find symbol
+[ERROR]   symbol:   variable AssignmentStatus
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[30,39] cannot find symbol
+[ERROR]   symbol:   variable AssignmentStatus
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[32,44] cannot find symbol
+[ERROR]   symbol:   variable AssignmentStatus
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/EngagementService.java:[37,51] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.models.EngagementRecord
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/TestService.java:[42,33] cannot find symbol
+[ERROR]   symbol:   method getMarksPerQuestion()
+[ERROR]   location: variable test of type com.platform.models.WeeklyTest
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/TestService.java:[45,51] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.models.TestSubmission
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/TestService.java:[57,49] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/FeedbackService.java:[17,37] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.models.Feedback
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/SelfAssessmentService.java:[21,19] cannot find symbol
+[ERROR]   symbol:   method setSubmittedAt(java.time.LocalDateTime)
+[ERROR]   location: variable assessment of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/SelfAssessmentService.java:[25,52] cannot find symbol
+[ERROR]   symbol:   method getStudent()
+[ERROR]   location: variable assessment of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/SelfAssessmentService.java:[44,19] cannot find symbol
+[ERROR]   symbol:   method setTeacherNote(java.lang.String)
+[ERROR]   location: variable assessment of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/AuthService.java:[36,75] cannot find symbol
+[ERROR]   symbol:   method getEmail()
+[ERROR]   location: variable user of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/AuthService.java:[36,92] cannot find symbol
+[ERROR]   symbol:   method getPassword()
+[ERROR]   location: variable user of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/AuthService.java:[49,45] cannot find symbol
+[ERROR]   symbol:   method getPassword()
+[ERROR]   location: variable user of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[35,85] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.dto.EngagementDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[36,35] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[37,37] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[38,69] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[39,71] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[41,39] cannot find symbol
+[ERROR]   symbol:   method getStudent()
+[ERROR]   location: variable a of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[41,75] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/AdminController.java:[42,34] incompatible types: inference variable T has incompatible bounds
+[ERROR]     equality constraints: com.platform.dto.EngagementDTO
+[ERROR]     lower bounds: java.lang.Object
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[35,102] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[38,77] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[45,42] cannot find symbol
+[ERROR]   symbol:   method isShowLeaderboardName()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[40,48] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.dto.LeaderboardDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[41,41] cannot find symbol
+[ERROR]   symbol:   method isShowLeaderboardName()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[41,75] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[41,109] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[44,43] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[50,53] invalid method reference
+[ERROR]   cannot find symbol
+[ERROR]     symbol:   method getEngagementScore()
+[ERROR]     location: class com.platform.dto.LeaderboardDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[53,31] cannot find symbol
+[ERROR]   symbol:   method setRank(int)
+[ERROR]   location: class com.platform.dto.LeaderboardDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/services/LeaderboardService.java:[61,16] cannot find symbol
+[ERROR]   symbol:   method setShowLeaderboardName(boolean)
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[40,98] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[46,42] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class com.platform.dto.EngagementDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[47,35] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[48,37] cannot find symbol
+[ERROR]   symbol:   method getName()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[49,69] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[50,71] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[52,39] cannot find symbol
+[ERROR]   symbol:   method getStudent()
+[ERROR]   location: variable a of type com.platform.models.SelfAssessment
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[52,75] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable student of type com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[64,102] cannot find symbol
+[ERROR]   symbol:   method getAnswers()
+[ERROR]   location: variable answers of type com.platform.dto.TestSubmissionDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[69,54] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[75,27] cannot find symbol
+[ERROR]   symbol:   method getBadge()
+[ERROR]   location: variable sb of type com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[76,34] cannot find symbol
+[ERROR]   symbol:   method getBadge()
+[ERROR]   location: variable sb of type com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[77,27] cannot find symbol
+[ERROR]   symbol:   method getBadge()
+[ERROR]   location: variable sb of type com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[78,31] cannot find symbol
+[ERROR]   symbol:   method getEarnedAt()
+[ERROR]   location: variable sb of type com.platform.models.StudentBadge
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[79,16] cannot find symbol
+[ERROR]   symbol:   method setEarned(boolean)
+[ERROR]   location: variable dto of type com.platform.dto.BadgeDTO
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[87,96] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[92,70] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[99,92] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: class com.platform.models.User
+[ERROR] /C:/anti/classroom-platform/backend/src/main/java/com/platform/controllers/StudentController.java:[104,19] cannot find symbol
+[ERROR]   symbol:   method setStudent(com.platform.models.User)
+[ERROR]   location: variable assessment of type com.platform.models.SelfAssessment
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
