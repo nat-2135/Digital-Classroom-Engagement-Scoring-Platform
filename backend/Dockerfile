@@ -15,4 +15,4 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Run the application
-CMD ["java", "-jar", "target/*.jar"]
+CMD ["java", "-jar", "target/classroom-engagement-0.0.1-SNAPSHOT.jar"]
