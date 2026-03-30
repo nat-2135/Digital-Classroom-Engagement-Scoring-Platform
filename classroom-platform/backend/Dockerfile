@@ -1,9 +1,18 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
+# Copy only pom.xml first (better caching)
+COPY pom.xml .
+
+# Install Maven and download dependencies
+RUN apt-get update && apt-get install -y maven && mvn dependency:go-offline
+
+# Copy remaining project files
 COPY . .
 
-RUN ./mvnw clean package -DskipTests
+# Build the application
+RUN mvn clean package -DskipTests
 
-CMD ["java", "-jar", "target/*.jar"]
+# Run the application
+CMD ["java", "-jar", "target/classroom-engagement-0.0.1-SNAPSHOT.jar"]

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/axiosInstance';
 import { Award, Lock, CheckCircle2, Star, Zap, Target, UserCheck, TrendingUp, CheckSquare, Dumbbell, Sprout, Search } from 'lucide-react';
 
 const BadgeDisplay = () => {
@@ -22,9 +22,7 @@ const BadgeDisplay = () => {
     useEffect(() => {
         const fetchBadges = async () => {
             try {
-                const resp = await axios.get('http://localhost:8080/api/student/badges', {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                });
+                const resp = await api.get('/api/student/badges');
                 setBadges(resp.data);
             } catch (e) { } finally { setLoading(false); }
         };

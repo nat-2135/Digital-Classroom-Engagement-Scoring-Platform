@@ -1,10 +1,12 @@
 package com.platform.repository;
 
 import com.platform.models.EngagementRecord;
-
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public interface EngagementRecordRepository extends JpaRepository<EngagementRecord, Long> {
     List<EngagementRecord> findByStudentIdOrderByWeekAsc(Long studentId);
     
@@ -12,5 +14,5 @@ public interface EngagementRecordRepository extends JpaRepository<EngagementReco
 
     List<EngagementRecord> findByWeek(Integer week);
 
-    java.util.Optional<EngagementRecord> findByStudentIdAndWeek(Long studentId, Integer week);
+    Optional<EngagementRecord> findByStudentIdAndWeek(Long studentId, Integer week);
 }
