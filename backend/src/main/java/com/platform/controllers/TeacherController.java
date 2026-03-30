@@ -105,10 +105,10 @@ public class TeacherController {
     }
 
     @PostMapping("/assessment-note")
-    public ResponseEntity<?> addAssessmentNote(@RequestBody Map<String, String> request) {
-        Long studentId = Long.valueOf(request.get("studentId"));
-        Integer week = Integer.valueOf(request.get("week"));
-        String note = request.get("note");
+    public ResponseEntity<?> addAssessmentNote(@RequestBody Map<String, Object> request) {
+        Long studentId = Long.valueOf(request.get("studentId").toString());
+        Integer week = Integer.valueOf(request.get("week").toString());
+        String note = request.get("note").toString();
         selfAssessmentService.addTeacherNote(studentId, week, note);
         return ResponseEntity.ok().build();
     }
