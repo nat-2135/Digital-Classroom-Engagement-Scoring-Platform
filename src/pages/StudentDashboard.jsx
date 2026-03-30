@@ -84,6 +84,8 @@ const WeeklyHistory = () => {
     );
 };
 
+import FeedbackBar from '../components/student/FeedbackBar';
+
 const StudentDashboard = ({ user }) => {
     const [activePage, setActivePage] = useState('dashboard');
     const [studentData, setStudentData] = useState(null);
@@ -139,6 +141,7 @@ const StudentDashboard = ({ user }) => {
                     </ErrorBoundary>
                 </div>
             </main>
+            <FeedbackBar />
         </div>
     );
 };
