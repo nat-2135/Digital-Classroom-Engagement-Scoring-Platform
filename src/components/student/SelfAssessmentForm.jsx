@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/axiosInstance';
 import { Star, MessageSquare, CheckCircle, Save, PenTool, Edit3, MessageCircle, RefreshCcw } from 'lucide-react';
 
 const SelfAssessmentForm = () => {
@@ -15,9 +15,7 @@ const SelfAssessmentForm = () => {
 
     const fetchCurrent = async () => {
         try {
-            const resp = await axios.get(`http://localhost:8080/api/student/self-assessment/current-week?week=${data.week}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
+            const resp = await api.get(`/api/student/self-assessment/current-week?week=${data.week}`);
             if (resp.data) {
                 setData(resp.data);
                 setSubmitted(true);
@@ -33,9 +31,7 @@ const SelfAssessmentForm = () => {
         if (data.participationRating === 0 || data.confidenceRating === 0) return;
         setSaving(true);
         try {
-            await axios.post('http://localhost:8080/api/student/self-assessment', data, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
+            await api.post('/api/student/self-assessment', data);
             setSubmitted(true);
             setSaving(false);
         } catch (e) { setSaving(false); }

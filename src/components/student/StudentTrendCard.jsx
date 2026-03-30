@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/axiosInstance';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { getStudentTrendMessage } from '../../utils/predictionEngine';
 import { TrendingUp, Award, Target, Zap, CheckCircle2, AlertCircle, HelpCircle, Activity } from 'lucide-react';
@@ -11,9 +11,7 @@ const StudentTrendCard = () => {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const resp = await axios.get('http://localhost:8080/api/student/engagement-history', {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-                });
+                const resp = await api.get('/api/student/engagement-history');
                 setHistory(resp.data);
             } catch (e) { } finally { setLoading(false); }
         };
