@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/api/student")
-@CrossOrigin("*")
-public class StudentController {
+//@RestController
+//@RequestMapping("/api/student")
+//@CrossOrigin("*")
+/*public class StudentController {
     @Autowired
     private EngagementService engagementService;
 
@@ -53,7 +53,7 @@ public class StudentController {
     public ResponseEntity<List<EngagementRecord>> getMyHistory() {
         return ResponseEntity.ok(engagementService.getStudentHistory(authService.getCurrentUser().getId()));
     }
-
+*/
     @GetMapping("/full-engagement")
     public ResponseEntity<EngagementDTO> getMyFullEngagement() {
         User student = authService.getCurrentUser();
