@@ -8,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 
 
 @Component
@@ -21,16 +23,19 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
-            User admin = User.builder()
+        Optional<User> admin = userRepository.findByEmail("admin@classroom.com");
+        if (admin.isEmpty()) {
+            User user = User.builder()
                     .name("System Admin")
                     .email("admin@classroom.com")
                     .password(passwordEncoder.encode("admin123"))
                     .role(Role.ADMIN)
                     .showLeaderboardName(true)
                     .build();
-            userRepository.save(admin);
+            userRepository.save(user);
             System.out.println(">>> Seed Data: Created Default Admin [admin@classroom.com / admin123]");
+        } else {
+            System.out.println(">>> Seed Data: Admin already exists.");
         }
     }
 }
