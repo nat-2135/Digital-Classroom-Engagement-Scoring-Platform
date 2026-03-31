@@ -36,7 +36,7 @@ export const generateFeedback = (scores = [], name = "Student") => {
     const lastScore = scores[scores.length - 1];
     const trend = calculateTrend(scores);
 
-    if (lastScore < 50) return `Critically low (${lastScore.toFixed(1)}). Immediate attention needed for ${name}.`;
+    if (lastScore < 50) return `Critically low (${(lastScore || 0).toFixed(1)}). Immediate attention needed for ${name}.`;
 
     // Check declining 3+ weeks
     if (scores.length >= 3) {
@@ -58,7 +58,10 @@ export const generateFeedback = (scores = [], name = "Student") => {
 export const getStudentTrendMessage = (scores = []) => {
     if (!scores || scores.length < 2) return { emoji: "✅", message: "On track! Consistency is key.", color: "#3b82f6" };
 
-    const trend = calculateTrend(scores);
+    const cleanScores = scores.filter(s => s !== null && s !== undefined);
+    if (cleanScores.length < 2) return { emoji: "✅", message: "Collecting data...", color: "#3b82f6" };
+
+    const trend = calculateTrend(cleanScores);
 
     if (trend.status === "at_risk") {
         return { emoji: "📉", message: "Slipping lately. Small steps make a difference!", color: "#f59e0b" };

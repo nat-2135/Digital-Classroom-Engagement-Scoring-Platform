@@ -35,5 +35,31 @@ public class DataSeeder implements CommandLineRunner {
             userRepository.save(user);
             System.out.println(">>> SEED SUCCESS: Administrative access granted for natz@gmail.com");
         }
+
+        // Added persistent teacher for demo
+        if (userRepository.findByEmail("rithi@gmail.com").isEmpty()) {
+            User teacher = User.builder()
+                    .name("Rithi")
+                    .email("rithi@gmail.com")
+                    .password(passwordEncoder.encode("rithi@21"))
+                    .role(Role.TEACHER)
+                    .showLeaderboardName(true)
+                    .build();
+            userRepository.save(teacher);
+            System.out.println(">>> SEED SUCCESS: Persistent Teacher rithi@gmail.com created");
+        }
+
+        // Added persistent student for demo
+        if (userRepository.findByEmail("akash@gmail.com").isEmpty()) {
+            User student = User.builder()
+                    .name("Akash")
+                    .email("akash@gmail.com")
+                    .password(passwordEncoder.encode("akash@21"))
+                    .role(Role.STUDENT)
+                    .showLeaderboardName(true)
+                    .build();
+            userRepository.save(student);
+            System.out.println(">>> SEED SUCCESS: Persistent Student akash@gmail.com created");
+        }
     }
 }
