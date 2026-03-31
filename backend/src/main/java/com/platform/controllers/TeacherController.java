@@ -59,13 +59,14 @@ public class TeacherController {
             List<com.platform.dto.EngagementDTO> history = students.stream().map(student -> com.platform.dto.EngagementDTO.builder()
                     .studentId(student.getId())
                     .studentName(student.getName())
-                    .history(allHistory.stream().filter(h -> h.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
-                    .testHistory(allSubmissions.stream().filter(s -> s.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
-                    .assessments(allAssessments.stream().filter(a -> a.getStudent() != null && a.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
+                    .history(allHistory.stream().filter(h -> h.getStudent() != null && student.getId().equals(h.getStudent().getId())).collect(Collectors.toList()))
+                    .testHistory(allSubmissions.stream().filter(s -> s.getStudent() != null && student.getId().equals(s.getStudent().getId())).collect(Collectors.toList()))
+                    .assessments(allAssessments.stream().filter(a -> a.getStudent() != null && student.getId().equals(a.getStudent().getId())).collect(Collectors.toList()))
                     .build()).collect(Collectors.toList());
             return ResponseEntity.ok(history);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Internal Platform Error: " + e.getMessage()));
         }
     }
 

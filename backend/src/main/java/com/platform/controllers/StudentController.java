@@ -60,8 +60,8 @@ public class StudentController {
             User student = authService.getCurrentUser();
             List<EngagementRecord> history = engagementService.getStudentHistory(student.getId());
             List<com.platform.models.TestSubmission> submissions = testService.getStudentSubmissions(student.getId());
-            List<SelfAssessment> assessments = selfAssessmentService.getAllAssessments().stream()
-                    .filter(a -> a.getStudent() != null && a.getStudent().getId().equals(student.getId()))
+            List<com.platform.models.SelfAssessment> assessments = selfAssessmentService.getAllAssessments().stream()
+                    .filter(a -> a.getStudent() != null && student.getId().equals(a.getStudent().getId()))
                     .collect(Collectors.toList());
 
             EngagementDTO dto = EngagementDTO.builder()
@@ -73,7 +73,8 @@ public class StudentController {
                     .build();
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Internal Error: " + e.getMessage()));
         }
     }
 

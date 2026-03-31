@@ -100,7 +100,11 @@ public class LeaderboardService {
             board.add(dto);
         }
 
-        board.sort((a, b) -> Double.compare(b.getEngagementScore(), a.getEngagementScore()));
+        board.sort((a, b) -> {
+            Double s1 = a.getEngagementScore() != null ? a.getEngagementScore() : 0.0;
+            Double s2 = b.getEngagementScore() != null ? b.getEngagementScore() : 0.0;
+            return Double.compare(s2, s1);
+        });
 
         for (int i = 0; i < board.size(); i++) {
             board.get(i).setRank(i + 1);
