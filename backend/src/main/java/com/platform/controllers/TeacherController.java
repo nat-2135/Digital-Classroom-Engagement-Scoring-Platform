@@ -49,17 +49,24 @@ public class TeacherController {
     }
 
     @GetMapping("/students/engagement-history")
-    public ResponseEntity<List<EngagementDTO>> getAllStudentsHistory() {
-        List<User> students = userRepository.findByRole(Role.STUDENT);
-        List<EngagementDTO> history = students.stream().map(student -> EngagementDTO.builder()
-                .studentId(student.getId())
-                .studentName(student.getName())
-                .history(engagementService.getStudentHistory(student.getId()))
-                .testHistory(testService.getStudentSubmissions(student.getId()))
-                .assessments(selfAssessmentService.getAllAssessments().stream()
-                        .filter(a -> a.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
-        return ResponseEntity.ok(history);
+    public ResponseEntity<?> getAllStudentsHistory() {
+        try {
+            List<User> students = userRepository.findByRole(Role.STUDENT);
+            List<EngagementRecord> allHistory = engagementService.getAllHistory();
+            List<com.platform.models.TestSubmission> allSubmissions = testService.getAllSubmissions();
+            List<SelfAssessment> allAssessments = selfAssessmentService.getAllAssessments();
+
+            List<com.platform.dto.EngagementDTO> history = students.stream().map(student -> com.platform.dto.EngagementDTO.builder()
+                    .studentId(student.getId())
+                    .studentName(student.getName())
+                    .history(allHistory.stream().filter(h -> h.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
+                    .testHistory(allSubmissions.stream().filter(s -> s.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
+                    .assessments(allAssessments.stream().filter(a -> a.getStudent() != null && a.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
+                    .build()).collect(Collectors.toList());
+            return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/students/{id}/full-engagement")
@@ -131,14 +138,20 @@ public class TeacherController {
 
     @PostMapping("/engagement")
     public ResponseEntity<?> saveEngagement(@RequestBody Map<String, Object> request) {
-        Long studentId = Long.valueOf(request.get("studentId").toString());
-        Integer week = Integer.valueOf(request.get("week").toString());
-        Double attendance = Double.valueOf(request.get("attendance").toString());
-        Integer participation = Integer.valueOf(request.get("participation").toString());
-        String assignmentStatus = request.get("assignmentStatus").toString();
+        try {
+            Object sId = request.get("studentId");
+            if (sId == null) return ResponseEntity.badRequest().body(Map.of("error", "Student ID missing"));
+            Long studentId = Long.valueOf(sId.toString());
 
-        return ResponseEntity
-                .ok(engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus));
+            Integer week = request.get("week") != null ? Integer.valueOf(request.get("week").toString()) : 1;
+            Double attendance = request.get("attendance") != null ? Double.valueOf(request.get("attendance").toString()) : 0.0;
+            Integer participation = request.get("participation") != null ? Integer.valueOf(request.get("participation").toString()) : 1;
+            String assignmentStatus = request.get("assignmentStatus") != null ? request.get("assignmentStatus").toString() : "NOT_SUBMITTED";
+
+            return ResponseEntity.ok(engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Save failed: " + e.getMessage()));
+        }
     }
 
     @PutMapping("/engagement/{id}")

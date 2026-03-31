@@ -55,17 +55,26 @@ public class StudentController {
     }
 
     @GetMapping("/full-engagement")
-    public ResponseEntity<EngagementDTO> getMyFullEngagement() {
-        User student = authService.getCurrentUser();
-        EngagementDTO dto = EngagementDTO.builder()
-                .studentId(student.getId())
-                .studentName(student.getName())
-                .history(engagementService.getStudentHistory(student.getId()))
-                .testHistory(testService.getStudentSubmissions(student.getId()))
-                .assessments(selfAssessmentService.getAllAssessments().stream()
-                        .filter(a -> a.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
-                .build();
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<?> getMyFullEngagement() {
+        try {
+            User student = authService.getCurrentUser();
+            List<EngagementRecord> history = engagementService.getStudentHistory(student.getId());
+            List<com.platform.models.TestSubmission> submissions = testService.getStudentSubmissions(student.getId());
+            List<SelfAssessment> assessments = selfAssessmentService.getAllAssessments().stream()
+                    .filter(a -> a.getStudent() != null && a.getStudent().getId().equals(student.getId()))
+                    .collect(Collectors.toList());
+
+            EngagementDTO dto = EngagementDTO.builder()
+                    .studentId(student.getId())
+                    .studentName(student.getName())
+                    .history(history)
+                    .testHistory(submissions)
+                    .assessments(assessments)
+                    .build();
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
     }
 
     @GetMapping("/tests/current")

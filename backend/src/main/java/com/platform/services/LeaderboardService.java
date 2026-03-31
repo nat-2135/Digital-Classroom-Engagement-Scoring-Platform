@@ -59,6 +59,7 @@ public class LeaderboardService {
                     com.platform.models.TestSubmission latestSub = subs.get(subs.size() - 1);
                     if (latestSub.getTotalMarks() != null && latestSub.getTotalMarks() > 0) {
                         testScore = (double) latestSub.getScore() / latestSub.getTotalMarks() * 100.0;
+                        if (Double.isNaN(testScore) || Double.isInfinite(testScore)) testScore = 0.0;
                     }
                 }
             } else if (!records.isEmpty()) {
@@ -73,6 +74,7 @@ public class LeaderboardService {
 
                 if (latest.getTestScore() != null && latest.getTestTotalMarks() != null && latest.getTestTotalMarks() > 0) {
                     testScore = (double) latest.getTestScore() / latest.getTestTotalMarks() * 100.0;
+                    if (Double.isNaN(testScore) || Double.isInfinite(testScore)) testScore = 0.0;
                 }
             }
 
