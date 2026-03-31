@@ -66,4 +66,8 @@ public class EngagementService {
             return engagementRecordRepository.findByWeek(week);
         return engagementRecordRepository.findAll();
     }
+
+    public List<EngagementRecord> getAllHistory() {
+        return engagementRecordRepository.findAll();
+    }
 }

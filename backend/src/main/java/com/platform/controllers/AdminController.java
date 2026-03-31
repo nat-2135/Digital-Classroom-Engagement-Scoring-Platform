@@ -74,14 +74,34 @@ public class AdminController {
     @GetMapping("/all-students/engagement-history")
     public ResponseEntity<List<EngagementDTO>> getAllStudentsHistory() {
         List<User> students = userRepository.findByRole(Role.STUDENT);
-        List<EngagementDTO> history = students.stream().map(student -> EngagementDTO.builder()
+        
+        // Optimizing by fetching all required data in bulk to avoid N+1 queries
+        List<com.platform.models.EngagementRecord> allHistory = engagementService.getAllHistory();
+        List<com.platform.models.TestSubmission> allSubmissions = testService.getAllSubmissions();
+        List<com.platform.models.SelfAssessment> allAssessments = selfAssessmentService.getAllAssessments();
+
+        List<EngagementDTO> history = students.stream().map(student -> {
+            List<com.platform.models.EngagementRecord> studentHistory = allHistory.stream()
+                .filter(h -> h.getStudent().getId().equals(student.getId()))
+                .collect(Collectors.toList());
+                
+            List<com.platform.models.TestSubmission> studentSubmissions = allSubmissions.stream()
+                .filter(s -> s.getStudent().getId().equals(student.getId()))
+                .collect(Collectors.toList());
+                
+            List<com.platform.models.SelfAssessment> studentAssessments = allAssessments.stream()
+                .filter(a -> a.getStudent().getId().equals(student.getId()))
+                .collect(Collectors.toList());
+
+            return EngagementDTO.builder()
                 .studentId(student.getId())
                 .studentName(student.getName())
-                .history(engagementService.getStudentHistory(student.getId()))
-                .testHistory(testService.getStudentSubmissions(student.getId()))
-                .assessments(selfAssessmentService.getAllAssessments().stream()
-                        .filter(a -> a.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
+                .history(studentHistory)
+                .testHistory(studentSubmissions)
+                .assessments(studentAssessments)
+                .build();
+        }).collect(Collectors.toList());
+        
         return ResponseEntity.ok(history);
     }
 

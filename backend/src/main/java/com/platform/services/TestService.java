@@ -92,4 +92,8 @@ public class TestService {
     public List<TestSubmission> getStudentSubmissions(Long studentId) {
         return testSubmissionRepository.findByStudentId(studentId);
     }
+
+    public List<TestSubmission> getAllSubmissions() {
+        return testSubmissionRepository.findAll();
+    }
 }

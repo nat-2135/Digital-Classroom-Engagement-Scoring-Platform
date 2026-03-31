@@ -26,7 +26,15 @@ const AdminInsightsPanel = () => {
         fetchData();
     }, []);
 
-    if (loading) return <div className="text-center p-20 text-emerald-700 animate-pulse font-bold text-sm">Loading Administration Data...</div>;
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center p-32 gap-6 animate-pulse">
+            <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="flex flex-col items-center gap-2">
+                <p className="text-xl font-bold text-gray-900">Initializing Secure Server...</p>
+                <p className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Waking up Render instance (typically 30-60s on cold start)</p>
+            </div>
+        </div>
+    );
 
     const analyzed = (data || []).map(student => {
         const scores = student.history ? student.history.map(h => h.engagementScore) : [];
