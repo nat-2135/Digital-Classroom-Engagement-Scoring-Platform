@@ -3,8 +3,15 @@ package com.platform.config;
 import com.platform.models.Role;
 import com.platform.models.User;
 import com.platform.models.WeeklyTest;
+import com.platform.models.EngagementRecord;
+import com.platform.models.Feedback;
+import com.platform.models.SelfAssessment;
 import com.platform.repository.UserRepository;
 import com.platform.repository.WeeklyTestRepository;
+import com.platform.repository.EngagementRecordRepository;
+import com.platform.repository.FeedbackRepository;
+import com.platform.repository.SelfAssessmentRepository;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +29,15 @@ public class DataSeeder implements CommandLineRunner {
 
     @Autowired
     private WeeklyTestRepository weeklyTestRepository;
+
+    @Autowired
+    private EngagementRecordRepository recordRepository;
+
+    @Autowired
+    private FeedbackRepository feedbackRepository;
+
+    @Autowired
+    private SelfAssessmentRepository selfRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -66,22 +82,58 @@ public class DataSeeder implements CommandLineRunner {
             userRepository.save(student);
             System.out.println(">>> SEED SUCCESS: Persistent Student akash@gmail.com created");
             
-            // Seed a sample test for this student
+            // Seed sample data for this student
             User teacher = userRepository.findByEmail("rithi@gmail.com").orElse(null);
-            if (teacher != null && weeklyTestRepository.count() == 0) {
-                String qs = "[{\"id\":1,\"type\":\"MC\",\"text\":\"What is the primary indicator of classroom engagement?\",\"options\":[\"Attendance\",\"Silence\",\"Grade Point\",\"Manual Entry\"],\"correctAnswer\":\"Attendance\"},{\"id\":2,\"type\":\"TF\",\"text\":\"Active participation improves student outcomes.\",\"correctAnswer\":\"True\"}]";
-                WeeklyTest sample = WeeklyTest.builder()
-                    .title("Engagement Foundation Protocol")
-                    .subject("Behavioral Analytics")
-                    .weekNumber(1)
-                    .teacher(teacher)
-                    .questions(qs)
-                    .timeLimit(15)
-                    .marksPerQuestion(10)
-                    .instructions("Complete this assessment with scientific precision.")
-                    .build();
-                weeklyTestRepository.save(sample);
-                System.out.println(">>> SEED SUCCESS: Initial Assessment Protocol deployed");
+            if (teacher != null) {
+                // 1. Initial Assessment Protocol
+                if (weeklyTestRepository.count() == 0) {
+                    String qs = "[{\"id\":101,\"type\":\"MC\",\"text\":\"Primary indicator of cognitive presence?\",\"options\":[\"Attendance\",\"Deep Processing\",\"Silence\",\"Speed\"],\"correctAnswer\":\"Deep Processing\"},{\"id\":102,\"type\":\"TF\",\"text\":\"Social presence is irrelevant in digital classrooms.\",\"correctAnswer\":\"False\"}]";
+                    WeeklyTest sample = WeeklyTest.builder()
+                        .title("Cognitive Engagement Protocol")
+                        .subject("Learning Sciences")
+                        .weekNumber(1)
+                        .teacher(teacher)
+                        .questions(qs)
+                        .timeLimit(15)
+                        .marksPerQuestion(10)
+                        .instructions("Determine the baseline cognitive engagement index for your current phase.")
+                        .build();
+                    weeklyTestRepository.save(sample);
+                }
+
+                // 2. History & Record
+                if (recordRepository.count() == 0) {
+                    EngagementRecord r1 = EngagementRecord.builder()
+                        .student(student)
+                        .week(1)
+                        .attendance(95.0)
+                        .participation(4)
+                        .assignmentStatus("COMPLETED")
+                        .testScore(90)
+                        .testTotalMarks(100)
+                        .engagementScore(92.5)
+                        .createdAt(LocalDateTime.now())
+                        .build();
+                    recordRepository.save(r1);
+                    
+                    Feedback f1 = new Feedback(student, teacher, "Excellent theoretical understanding shown in Week 1. Continue focusing on practical application.");
+                    feedbackRepository.save(f1);
+                }
+
+                // 3. Self Assessment
+                if (selfRepo.count() == 0) {
+                    SelfAssessment sa = SelfAssessment.builder()
+                        .student(student)
+                        .week(1)
+                        .participationRating(4)
+                        .confidenceRating(5)
+                        .comments("I feel confident about the material but need more practice with the software tools.")
+                        .submittedAt(LocalDateTime.now())
+                        .build();
+                    selfRepo.save(sa);
+                }
+                
+                System.out.println(">>> SEED SUCCESS: Demo environment fully populated for Akash");
             }
         }
     }
