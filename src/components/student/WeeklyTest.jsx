@@ -21,22 +21,28 @@ const WeeklyTest = () => {
                     const submittedIds = (submissionsResp.data.testHistory || []).map(s => s.test.id);
 
                     const unsubmittedTests = resp.data.filter(t => !submittedIds.includes(t.id));
-                    let activeTest = null;
-                    if (unsubmittedTests.length > 0) {
-                        activeTest = unsubmittedTests[unsubmittedTests.length - 1]; // Newest unsubmitted
-                    } else {
-                        activeTest = resp.data[resp.data.length - 1]; // Newest submitted
-                    }
+                    let activeTest = unsubmittedTests.length > 0 
+                        ? unsubmittedTests[unsubmittedTests.length - 1] 
+                        : resp.data[resp.data.length - 1];
 
-                    if (typeof activeTest.questions === 'string') {
-                        try {
-                            activeTest.questions = JSON.parse(activeTest.questions);
-                        } catch(e) {
-                            activeTest.questions = [];
+                    // Robust questioning parsing logic
+                    let questions = [];
+                    if (activeTest.questions) {
+                        if (typeof activeTest.questions === 'string') {
+                            try {
+                                questions = JSON.parse(activeTest.questions);
+                            } catch(e) {
+                                console.error("Failed to parse test questions", e);
+                                questions = [];
+                            }
+                        } else if (Array.isArray(activeTest.questions)) {
+                            questions = activeTest.questions;
                         }
                     }
+                    
+                    activeTest.questions = questions;
                     setTest(activeTest);
-                    setTimeLeft(activeTest.timeLimit * 60);
+                    setTimeLeft((activeTest.timeLimit || 30) * 60);
 
                     // Check if already submitted
                     const existing = (submissionsResp.data.testHistory || []).find(s => s.test.id === activeTest.id);
@@ -45,7 +51,11 @@ const WeeklyTest = () => {
                         setTestState('submitted');
                     }
                 }
-            } catch (e) { } finally { setLoading(false); }
+            } catch (e) {
+                console.error("Test fetch failed", e);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchTest();
     }, []);
@@ -89,48 +99,61 @@ const WeeklyTest = () => {
         </div>
     );
 
-    if (testState === 'available') return (
-        <div className="card shadow-2xl p-0 overflow-hidden border-emerald-50 bg-white group hover:border-emerald-500 transition-all duration-700 rounded-[40px] max-w-2xl mx-auto animate-in slide-in-from-bottom-10">
-            <div className="p-12 bg-gray-900 flex flex-col items-center text-center gap-6 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
-                <div className="w-16 h-16 rounded-[24px] bg-white/10 flex items-center justify-center backdrop-blur-md shadow-2xl">
-                    <ClipboardList size={28} className="text-emerald-400" />
+    if (testState === 'available') {
+        if (!test.questions || test.questions.length === 0) {
+            return (
+                <div className="text-center p-24 bg-gray-50 border border-dashed border-gray-200 rounded-[50px] flex flex-col items-center gap-8 shadow-inner overflow-hidden relative max-w-3xl mx-auto">
+                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-600"><AlertCircle size={28} /></div>
+                    <div className="flex flex-col gap-2">
+                        <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic text-amber-700">Incomplete Assessment Object</h3>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic leading-relaxed px-10">The instructor has deployed a protocol without inquiry vectors. Content synchronization required.</p>
+                    </div>
                 </div>
-                <div className="flex flex-col gap-1 relative z-10">
-                    <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">{test.title}</h3>
-                    <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-[0.4em]">{test.subject} | Phase Week {test.weekNumber}</p>
+            );
+        }
+        return (
+            <div className="card shadow-2xl p-0 overflow-hidden border-emerald-50 bg-white group hover:border-emerald-500 transition-all duration-700 rounded-[40px] max-w-2xl mx-auto animate-in slide-in-from-bottom-10">
+                <div className="p-12 bg-gray-900 flex flex-col items-center text-center gap-6 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
+                    <div className="w-16 h-16 rounded-[24px] bg-white/10 flex items-center justify-center backdrop-blur-md shadow-2xl">
+                        <ClipboardList size={28} className="text-emerald-400" />
+                    </div>
+                    <div className="flex flex-col gap-1 relative z-10">
+                        <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">{test.title}</h3>
+                        <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-[0.4em]">{test.subject} | Phase Week {test.weekNumber}</p>
+                    </div>
+                </div>
+
+                <div className="p-12 flex flex-col gap-10">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-3 p-8 bg-gray-50/50 rounded-3xl border border-gray-100 items-center justify-center">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Time Cap</span>
+                            <span className="text-2xl font-black text-gray-900">{test.timeLimit} MIN</span>
+                        </div>
+                        <div className="flex flex-col gap-3 p-8 bg-gray-50/50 rounded-3xl border border-gray-100 items-center justify-center">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Threshold</span>
+                            <span className="text-2xl font-black text-gray-900">{test.questions.length * test.marksPerQuestion} PTS</span>
+                        </div>
+                    </div>
+
+                    <div className="p-8 bg-emerald-50/30 rounded-3xl border border-emerald-100 flex flex-col gap-4 italic font-bold">
+                        <div className="flex items-center gap-2">
+                            <AlertCircle size={14} className="text-emerald-700" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-900">Protocol Directives</span>
+                        </div>
+                        <p className="text-sm text-gray-600 leading-relaxed pl-1">{test.instructions || "Standard academic evaluation protocol detected. Proceeed with maximum fidelity."}</p>
+                    </div>
+
+                    <button
+                        onClick={() => setTestState('ongoing')}
+                        className="flex items-center justify-center gap-4 w-full bg-emerald-600 text-white py-7 text-[11px] font-black uppercase tracking-[0.3em] rounded-3xl shadow-2xl shadow-emerald-200 hover:bg-emerald-700 hover:scale-105 transition-all group"
+                    >
+                        Initialize Protocol <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                    </button>
                 </div>
             </div>
-
-            <div className="p-12 flex flex-col gap-10">
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-3 p-8 bg-gray-50/50 rounded-3xl border border-gray-100 items-center justify-center">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Time Cap</span>
-                        <span className="text-2xl font-black text-gray-900">{test.timeLimit} MIN</span>
-                    </div>
-                    <div className="flex flex-col gap-3 p-8 bg-gray-50/50 rounded-3xl border border-gray-100 items-center justify-center">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Threshold</span>
-                        <span className="text-2xl font-black text-gray-900">{test.questions.length * test.marksPerQuestion} PTS</span>
-                    </div>
-                </div>
-
-                <div className="p-8 bg-emerald-50/30 rounded-3xl border border-emerald-100 flex flex-col gap-4 italic font-bold">
-                    <div className="flex items-center gap-2">
-                        <AlertCircle size={14} className="text-emerald-700" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-900">Protocol Directives</span>
-                    </div>
-                    <p className="text-sm text-gray-600 leading-relaxed pl-1">{test.instructions || "Standard academic evaluation protocol detected. Proceeed with maximum fidelity."}</p>
-                </div>
-
-                <button
-                    onClick={() => setTestState('ongoing')}
-                    className="flex items-center justify-center gap-4 w-full bg-emerald-600 text-white py-7 text-[11px] font-black uppercase tracking-[0.3em] rounded-3xl shadow-2xl shadow-emerald-200 hover:bg-emerald-700 hover:scale-105 transition-all group"
-                >
-                    Initialize Protocol <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                </button>
-            </div>
-        </div>
-    );
+        );
+    }
 
     if (testState === 'ongoing') return (
         <div className="fixed inset-0 bg-white z-[100] flex flex-col animate-in fade-in duration-1000">

@@ -141,17 +141,25 @@ public class TeacherController {
     public ResponseEntity<?> saveEngagement(@RequestBody Map<String, Object> request) {
         try {
             Object sId = request.get("studentId");
-            if (sId == null) return ResponseEntity.badRequest().body(Map.of("error", "Student ID missing"));
+            if (sId == null || sId.toString().isEmpty()) return ResponseEntity.badRequest().body(Map.of("error", "Student ID missing"));
             Long studentId = Long.valueOf(sId.toString());
 
-            Integer week = request.get("week") != null ? Integer.valueOf(request.get("week").toString()) : 1;
-            Double attendance = request.get("attendance") != null ? Double.valueOf(request.get("attendance").toString()) : 0.0;
-            Integer participation = request.get("participation") != null ? Integer.valueOf(request.get("participation").toString()) : 1;
+            // Numeric safety parsing
+            Integer week = 1;
+            try { week = Integer.valueOf(request.get("week").toString()); } catch (Exception e) {}
+            
+            Double attendance = 0.0;
+            try { attendance = Double.valueOf(request.get("attendance").toString()); } catch (Exception e) {}
+            
+            Integer participation = 1;
+            try { participation = Integer.valueOf(request.get("participation").toString()); } catch (Exception e) {}
+            
             String assignmentStatus = request.get("assignmentStatus") != null ? request.get("assignmentStatus").toString() : "NOT_SUBMITTED";
 
             return ResponseEntity.ok(engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Save failed: " + e.getMessage()));
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Critical Save Failure: " + e.getMessage()));
         }
     }
 
