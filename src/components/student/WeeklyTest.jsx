@@ -27,7 +27,7 @@ const WeeklyTest = () => {
 
                     // Robust questioning parsing logic
                     let questions = [];
-                    if (activeTest.questions) {
+                    if (activeTest?.questions) {
                         if (typeof activeTest.questions === 'string') {
                             try {
                                 questions = JSON.parse(activeTest.questions);
@@ -40,12 +40,29 @@ const WeeklyTest = () => {
                         }
                     }
                     
-                    activeTest.questions = questions;
-                    setTest(activeTest);
-                    setTimeLeft((activeTest.timeLimit || 30) * 60);
+                    // Sanitize questions - ensure each has expected properties
+                    const cleanQuestions = (questions || []).map(q => ({
+                        id: q?.id || Math.random(),
+                        type: q?.type || 'MC',
+                        text: q?.text || 'Standard Inquiry Vector',
+                        options: Array.isArray(q?.options) ? q.options : [],
+                        correctAnswer: q?.correctAnswer || ''
+                    }));
 
-                    // Check if already submitted
-                    const existing = (submissionsResp.data.testHistory || []).find(s => s.test.id === activeTest.id);
+                    const sanitizedTest = {
+                        ...activeTest,
+                        questions: cleanQuestions,
+                        marksPerQuestion: activeTest?.marksPerQuestion || 10,
+                        timeLimit: activeTest?.timeLimit || 30,
+                        title: activeTest?.title || 'Academic Evaluation Protocol',
+                        subject: activeTest?.subject || 'Behavioral Sciences'
+                    };
+                    
+                    setTest(sanitizedTest);
+                    setTimeLeft(sanitizedTest.timeLimit * 60);
+
+                    // Check if already submitted with safe navigation
+                    const existing = (submissionsResp.data?.testHistory || []).find(s => s?.test?.id === sanitizedTest.id);
                     if (existing) {
                         setSubmission(existing);
                         setTestState('submitted');
@@ -73,18 +90,21 @@ const WeeklyTest = () => {
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
-            const resp = await api.post(`/api/student/tests/${test.id}/submit`, {
-                answers: JSON.stringify(answers)
+            const resp = await api.post(`/api/student/tests/${test?.id}/submit`, {
+                answers: JSON.stringify(answers || {})
             });
             setSubmission(resp.data);
             setTestState('submitted');
             setSubmitting(false);
-        } catch (e) { setSubmitting(false); }
+        } catch (e) { 
+            console.error("Submission failed", e);
+            setSubmitting(false); 
+        }
     };
 
     const formatTime = (seconds) => {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
+        const m = Math.floor(seconds / 60) || 0;
+        const s = seconds % 60 || 0;
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
@@ -132,7 +152,7 @@ const WeeklyTest = () => {
                         </div>
                         <div className="flex flex-col gap-3 p-8 bg-gray-50/50 rounded-3xl border border-gray-100 items-center justify-center">
                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Threshold</span>
-                            <span className="text-2xl font-black text-gray-900">{test.questions.length * test.marksPerQuestion} PTS</span>
+                            <span className="text-2xl font-black text-gray-900">{(test.questions?.length || 0) * (test.marksPerQuestion || 0)} PTS</span>
                         </div>
                     </div>
 
@@ -155,126 +175,130 @@ const WeeklyTest = () => {
         );
     }
 
-    if (testState === 'ongoing') return (
-        <div className="fixed inset-0 bg-white z-[100] flex flex-col animate-in fade-in duration-1000">
-            <div className="h-24 bg-gray-900 px-12 flex items-center justify-between shadow-2xl relative">
-                <div className="flex items-center gap-10">
-                    <div className="flex flex-col">
-                        <h4 className="text-white text-xl font-black tracking-tighter uppercase italic">{test.title}</h4>
-                        <span className="text-emerald-500 text-[9px] font-black uppercase tracking-widest">Active Evaluation Sequence</span>
-                    </div>
-                    <div className="h-10 w-px bg-white/10 hidden md:block"></div>
-                </div>
-                <div className="flex items-center gap-8">
-                    <div className="flex flex-col items-end gap-1">
-                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Temporal Synchronizer</span>
-                        <div className="flex items-center gap-4 text-white">
-                            <Timer size={20} className="text-emerald-500 animate-pulse" />
-                            <span className="text-4xl font-black font-mono tracking-tighter tabular-nums">{formatTime(timeLeft)}</span>
+    if (testState === 'ongoing') {
+        const currentQuestion = test.questions?.[currentQ] || { text: 'Unknown Vector', options: [], type: 'MC', id: currentQ };
+        
+        return (
+            <div className="fixed inset-0 bg-white z-[100] flex flex-col animate-in fade-in duration-1000">
+                <div className="h-24 bg-gray-900 px-12 flex items-center justify-between shadow-2xl relative">
+                    <div className="flex items-center gap-10">
+                        <div className="flex flex-col">
+                            <h4 className="text-white text-xl font-black tracking-tighter uppercase italic">{test.title}</h4>
+                            <span className="text-emerald-500 text-[9px] font-black uppercase tracking-widest">Active Evaluation Sequence</span>
                         </div>
+                        <div className="h-10 w-px bg-white/10 hidden md:block"></div>
                     </div>
-                </div>
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-800">
-                    <div className="bg-emerald-500 h-full transition-all duration-1000 ease-linear" style={{ width: `${(timeLeft / (test.timeLimit * 60)) * 100}%` }}></div>
-                </div>
-            </div>
-
-            <div className="flex-1 flex overflow-hidden">
-                <div className="w-[300px] bg-gray-50 border-r border-gray-100 p-12 flex flex-col gap-10 overflow-y-auto hidden lg:flex">
-                    <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Inquiry Vector Labs</h5>
-                    <div className="grid grid-cols-4 gap-4">
-                        {test.questions.map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setCurrentQ(i)}
-                                className={`w-12 h-12 rounded-[18px] flex items-center justify-center text-xs font-black transition-all ${currentQ === i ? 'bg-gray-900 text-white shadow-2xl scale-110' : answers[test.questions[i].id] ? 'bg-emerald-100 text-emerald-800' : 'bg-white text-gray-400 hover:bg-gray-100 border border-gray-100'}`}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="flex-1 p-12 lg:p-24 overflow-y-auto bg-gray-50/20">
-                    <div className="max-w-2xl mx-auto flex flex-col gap-16">
-                        <div className="flex flex-col gap-6">
-                            <div className="flex items-center gap-4">
-                                <span className="text-6xl font-black text-emerald-600/10 italic tabular-nums">0{currentQ + 1}</span>
-                                <div className="h-px flex-1 bg-gray-100"></div>
+                    <div className="flex items-center gap-8">
+                        <div className="flex flex-col items-end gap-1">
+                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Temporal Synchronizer</span>
+                            <div className="flex items-center gap-4 text-white">
+                                <Timer size={20} className="text-emerald-500 animate-pulse" />
+                                <span className="text-4xl font-black font-mono tracking-tighter tabular-nums">{formatTime(timeLeft)}</span>
                             </div>
-                            <h2 className="text-3xl font-black text-gray-900 leading-tight tracking-tighter grow italic">{test.questions[currentQ].text}</h2>
                         </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-800">
+                        <div className="bg-emerald-500 h-full transition-all duration-1000 ease-linear" style={{ width: `${(timeLeft / ((test.timeLimit || 30) * 60)) * 100}%` }}></div>
+                    </div>
+                </div>
 
-                        <div className="flex flex-col gap-8">
-                            {test.questions[currentQ].type === 'MC' && (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {test.questions[currentQ].options.map((opt, oIdx) => (
-                                        <button
-                                            key={oIdx}
-                                            onClick={() => setAnswers({ ...answers, [test.questions[currentQ].id]: opt })}
-                                            className={`p-10 rounded-3xl text-left border-2 transition-all flex items-center gap-8 group/opt ${answers[test.questions[currentQ].id] === opt ? 'bg-emerald-600 border-emerald-700 text-white shadow-2xl shadow-emerald-200' : 'bg-white border-gray-100 text-gray-700 hover:border-emerald-500'}`}
-                                        >
-                                            <span className={`w-10 h-10 rounded-2xl flex items-center justify-center text-xs font-black transition-colors ${answers[test.questions[currentQ].id] === opt ? 'bg-white/20 text-white' : 'bg-gray-50 text-gray-400 group-hover/opt:bg-emerald-500 group-hover/opt:text-white'}`}>{String.fromCharCode(65 + oIdx)}</span>
-                                            <span className="text-xl font-bold italic grow">{opt}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-
-                            {test.questions[currentQ].type === 'TF' && (
-                                <div className="flex gap-8">
-                                    {['True', 'False'].map((opt) => (
-                                        <button
-                                            key={opt}
-                                            onClick={() => setAnswers({ ...answers, [test.questions[currentQ].id]: opt })}
-                                            className={`flex-1 p-16 rounded-[40px] text-4xl font-black uppercase tracking-tighter border-2 shadow-2xl transition-all duration-500 ${answers[test.questions[currentQ].id] === opt ? 'bg-emerald-600 border-emerald-700 text-white' : 'bg-white border-gray-50 text-gray-900 hover:border-emerald-100'}`}
-                                        >
-                                            {opt}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-
-                            {test.questions[currentQ].type === 'SA' && (
-                                <textarea
-                                    className="w-full text-2xl font-black border-4 border-gray-50 focus:border-emerald-600 rounded-[40px] p-16 shadow-2xl transition-all resize-none bg-white min-h-[300px] italic"
-                                    placeholder="Synthesize analysis..."
-                                    value={answers[test.questions[currentQ].id] || ''}
-                                    onChange={(e) => setAnswers({ ...answers, [test.questions[currentQ].id]: e.target.value })}
-                                />
-                            )}
+                <div className="flex-1 flex overflow-hidden">
+                    <div className="w-[300px] bg-gray-50 border-r border-gray-100 p-12 flex flex-col gap-10 overflow-y-auto hidden lg:flex">
+                        <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Inquiry Vector Labs</h5>
+                        <div className="grid grid-cols-4 gap-4">
+                            {test.questions.map((q, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrentQ(i)}
+                                    className={`w-12 h-12 rounded-[18px] flex items-center justify-center text-xs font-black transition-all ${currentQ === i ? 'bg-gray-900 text-white shadow-2xl scale-110' : answers?.[q?.id] ? 'bg-emerald-100 text-emerald-800' : 'bg-white text-gray-400 hover:bg-gray-100 border border-gray-100'}`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
                         </div>
+                    </div>
 
-                        <div className="mt-10 flex items-center justify-between gap-12 border-t border-gray-100 pt-16">
-                            <button
-                                disabled={currentQ === 0}
-                                onClick={() => setCurrentQ(prev => prev - 1)}
-                                className="px-10 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 disabled:opacity-0 transition-all"
-                            >
-                                Back
-                            </button>
-                            {currentQ === test.questions.length - 1 ? (
+                    <div className="flex-1 p-12 lg:p-24 overflow-y-auto bg-gray-50/20">
+                        <div className="max-w-2xl mx-auto flex flex-col gap-16">
+                            <div className="flex flex-col gap-6">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-6xl font-black text-emerald-600/10 italic tabular-nums">0{currentQ + 1}</span>
+                                    <div className="h-px flex-1 bg-gray-100"></div>
+                                </div>
+                                <h2 className="text-3xl font-black text-gray-900 leading-tight tracking-tighter grow italic">{currentQuestion.text}</h2>
+                            </div>
+
+                            <div className="flex flex-col gap-8">
+                                {currentQuestion.type === 'MC' && (
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {(currentQuestion.options || []).map((opt, oIdx) => (
+                                            <button
+                                                key={oIdx}
+                                                onClick={() => setAnswers({ ...answers, [currentQuestion.id]: opt })}
+                                                className={`p-10 rounded-3xl text-left border-2 transition-all flex items-center gap-8 group/opt ${answers?.[currentQuestion.id] === opt ? 'bg-emerald-600 border-emerald-700 text-white shadow-2xl shadow-emerald-200' : 'bg-white border-gray-100 text-gray-700 hover:border-emerald-500'}`}
+                                            >
+                                                <span className={`w-10 h-10 rounded-2xl flex items-center justify-center text-xs font-black transition-colors ${answers?.[currentQuestion.id] === opt ? 'bg-white/20 text-white' : 'bg-gray-50 text-gray-400 group-hover/opt:bg-emerald-500 group-hover/opt:text-white'}`}>{String.fromCharCode(65 + oIdx)}</span>
+                                                <span className="text-xl font-bold italic grow">{opt}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {currentQuestion.type === 'TF' && (
+                                    <div className="flex gap-8">
+                                        {['True', 'False'].map((opt) => (
+                                            <button
+                                                key={opt}
+                                                onClick={() => setAnswers({ ...answers, [currentQuestion.id]: opt })}
+                                                className={`flex-1 p-16 rounded-[40px] text-4xl font-black uppercase tracking-tighter border-2 shadow-2xl transition-all duration-500 ${answers?.[currentQuestion.id] === opt ? 'bg-emerald-600 border-emerald-700 text-white' : 'bg-white border-gray-50 text-gray-900 hover:border-emerald-100'}`}
+                                            >
+                                                {opt}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {currentQuestion.type === 'SA' && (
+                                    <textarea
+                                        className="w-full text-2xl font-black border-4 border-gray-50 focus:border-emerald-600 rounded-[40px] p-16 shadow-2xl transition-all resize-none bg-white min-h-[300px] italic"
+                                        placeholder="Synthesize analysis..."
+                                        value={answers?.[currentQuestion.id] || ''}
+                                        onChange={(e) => setAnswers({ ...answers, [currentQuestion.id]: e.target.value })}
+                                    />
+                                )}
+                            </div>
+
+                            <div className="mt-10 flex items-center justify-between gap-12 border-t border-gray-100 pt-16">
                                 <button
-                                    disabled={submitting}
-                                    onClick={handleSubmit}
-                                    className="px-20 py-6 bg-emerald-600 text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl hover:bg-emerald-700 transition-all active:scale-95 italic"
+                                    disabled={currentQ === 0}
+                                    onClick={() => setCurrentQ(prev => prev - 1)}
+                                    className="px-10 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 disabled:opacity-0 transition-all"
                                 >
-                                    Seal Protocol
+                                    Back
                                 </button>
-                            ) : (
-                                <button
-                                    onClick={() => setCurrentQ(prev => prev + 1)}
-                                    className="flex items-center gap-4 px-16 py-6 bg-gray-900 text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl hover:bg-emerald-600 transition-all group"
-                                >
-                                    Proceed <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                                </button>
-                            )}
+                                {currentQ === (test.questions?.length || 0) - 1 ? (
+                                    <button
+                                        disabled={submitting}
+                                        onClick={handleSubmit}
+                                        className="px-20 py-6 bg-emerald-600 text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl hover:bg-emerald-700 transition-all active:scale-95 italic"
+                                    >
+                                        Seal Protocol
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => setCurrentQ(prev => prev + 1)}
+                                        className="flex items-center gap-4 px-16 py-6 bg-gray-900 text-white text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl hover:bg-emerald-600 transition-all group"
+                                    >
+                                        Proceed <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
 
     if (testState === 'submitted') return (
         <div className="card shadow-2xl p-0 overflow-hidden border-gray-100 bg-white group rounded-[40px] max-w-6xl mx-auto animate-in fade-in duration-1000">
@@ -301,14 +325,14 @@ const WeeklyTest = () => {
                                 <circle
                                     cx="88" cy="88" r="78" stroke="white" strokeWidth="15" fill="none"
                                     strokeDasharray={78 * 2 * Math.PI}
-                                    strokeDashoffset={78 * 2 * Math.PI * (1 - (submission?.score / submission?.totalMarks))}
+                                    strokeDashoffset={78 * 2 * Math.PI * (1 - ((submission?.score || 0) / (submission?.totalMarks || 1)))}
                                     strokeLinecap="round"
                                     className="transition-all duration-[2000ms] delay-500 ease-out"
                                 />
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="text-4xl font-bold text-white tabular-nums">{Math.round(submission?.score || 0)}</span>
-                                <span className="text-[10px] font-bold text-emerald-100 uppercase tracking-tighter">/ {submission?.totalMarks} Marks</span>
+                                <span className="text-[10px] font-bold text-emerald-100 uppercase tracking-tighter">/ {submission?.totalMarks || 100} Marks</span>
                             </div>
                         </div>
                     </div>
@@ -331,24 +355,26 @@ const WeeklyTest = () => {
                         </div>
 
                         <div className="flex flex-col gap-6">
-                            {test.questions.map((q, i) => {
-                                const studentAns = JSON.parse(submission?.answers || '{}')[q.id];
-                                const isCorrect = studentAns === q.correctAnswer;
+                            {(test.questions || []).map((q, i) => {
+                                let ansObj = {};
+                                try { ansObj = JSON.parse(submission?.answers || '{}'); } catch(e) {}
+                                const studentAns = ansObj?.[q?.id] || 'N/A';
+                                const isCorrect = q?.correctAnswer && studentAns && String(studentAns).trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase();
                                 return (
-                                    <div key={i} className="p-8 bg-gray-50 border border-gray-100 rounded-[32px] flex flex-col gap-6 hover:bg-white hover:shadow-xl hover:border-emerald-200 transition-all duration-300">
+                                    <div key={i} className="p-8 bg-gray-50 border border-gray-100 rounded-[32px] flex flex-col gap-6 hover:bg-white hover:shadow-xl hover:border-emerald-200 transition-all duration-700 group/log">
                                         <div className="flex items-start gap-4">
-                                            <span className="text-4xl font-bold text-emerald-600/10 shrink-0">0{i + 1}</span>
-                                            <h5 className="text-lg font-semibold text-gray-900 leading-snug grow">{q.text}</h5>
+                                            <span className="text-4xl font-black text-emerald-600/10 shrink-0 group-hover/log:text-emerald-500/20 transition-colors">0{i + 1}</span>
+                                            <h5 className="text-lg font-bold text-gray-900 leading-snug grow italic">{q.text}</h5>
                                         </div>
                                         
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-12">
-                                            <div className={`p-6 rounded-2xl border ${isCorrect ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}>
-                                                <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400 block mb-2">Captured Entry</span>
-                                                <p className={`text-sm font-semibold ${isCorrect ? 'text-emerald-800' : 'text-red-800'}`}>"{studentAns || "Null Input"}"</p>
+                                            <div className={`p-6 rounded-2xl border-2 transition-all ${isCorrect ? 'bg-emerald-50/50 border-emerald-100 shadow-emerald-50' : 'bg-red-50/50 border-red-100 shadow-red-50'}`}>
+                                                <span className="text-[9px] uppercase font-black tracking-[0.2em] text-gray-400 block mb-2">Captured Entry</span>
+                                                <p className={`text-sm font-black italic ${isCorrect ? 'text-emerald-700' : 'text-red-700'}`}>"{studentAns}"</p>
                                             </div>
                                             <div className="p-6 bg-gray-900 rounded-2xl border border-gray-800 shadow-sm">
-                                                <span className="text-[9px] uppercase font-bold tracking-widest text-emerald-500/40 block mb-2">Target Logic</span>
-                                                <p className="text-sm font-semibold text-emerald-400 italic">"{q.correctAnswer}"</p>
+                                                <span className="text-[9px] uppercase font-black tracking-[0.2em] text-emerald-500/40 block mb-2">Target Logic</span>
+                                                <p className="text-sm font-black text-emerald-400 italic">"{q.correctAnswer}"</p>
                                             </div>
                                         </div>
                                     </div>
@@ -357,7 +383,7 @@ const WeeklyTest = () => {
                         </div>
                         
                         <div className="pt-10 border-t border-gray-100 text-center">
-                            <span className="text-[9px] font-bold text-gray-300 uppercase tracking-[0.5em]">Academic Integrity Protocol Verified</span>
+                            <span className="text-[9px] font-black text-gray-300 uppercase tracking-[0.5em]">Academic Integrity Protocol Verified</span>
                         </div>
                     </div>
                 </div>
