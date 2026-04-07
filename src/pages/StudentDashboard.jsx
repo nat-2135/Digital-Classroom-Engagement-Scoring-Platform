@@ -100,6 +100,7 @@ const StudentDashboard = ({ user }) => {
                     name: user?.name,
                     attendance: latest?.attendance,
                     currentScore: Math.round(latest?.engagementScore || 0),
+                    week: res.data.week || 1,
                     badgeCount: 3
                 });
             })
@@ -122,7 +123,7 @@ const StudentDashboard = ({ user }) => {
             case 'leaderboard':
                 return <Leaderboard />;
             case 'assessment':
-                return <SelfAssessmentForm />;
+                return <SelfAssessmentForm currentWeek={studentData?.week} />;
             case 'history':
                 return <WeeklyHistory />;
             default:

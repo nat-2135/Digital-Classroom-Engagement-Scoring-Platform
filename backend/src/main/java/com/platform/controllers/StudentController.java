@@ -64,9 +64,16 @@ public class StudentController {
                     .filter(a -> a.getStudent() != null && student.getId().equals(a.getStudent().getId()))
                     .collect(Collectors.toList());
 
+            int currentWeek = 1;
+            if (!history.isEmpty()) currentWeek = Math.max(currentWeek, history.stream().mapToInt(EngagementRecord::getWeek).max().orElse(1));
+            // Consider tests as well
+            List<WeeklyTest> allTests = testService.getAllTests();
+            if(!allTests.isEmpty()) currentWeek = Math.max(currentWeek, allTests.stream().mapToInt(WeeklyTest::getWeekNumber).max().orElse(1));
+
             EngagementDTO dto = EngagementDTO.builder()
                     .studentId(student.getId())
                     .studentName(student.getName())
+                    .week(currentWeek)
                     .history(history)
                     .testHistory(submissions)
                     .assessments(assessments)

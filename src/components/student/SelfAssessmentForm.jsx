@@ -2,16 +2,22 @@ import React, { useState, useEffect } from 'react';
 import api from '../../utils/axiosInstance';
 import { Star, MessageSquare, CheckCircle, Save, PenTool, Edit3, MessageCircle, RefreshCcw } from 'lucide-react';
 
-const SelfAssessmentForm = () => {
+const SelfAssessmentForm = ({ currentWeek }) => {
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({
         participationRating: 0,
         confidenceRating: 0,
         comments: '',
-        week: 1 // In real app, this would be dynamic
+        week: currentWeek || 1 
     });
     const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        if (currentWeek) {
+            setData(prev => ({ ...prev, week: currentWeek }));
+        }
+    }, [currentWeek]);
 
     const fetchCurrent = async () => {
         try {
@@ -53,7 +59,7 @@ const SelfAssessmentForm = () => {
                     </div>
                     <div className="flex flex-col">
                         <h3 className={`text-2xl font-black tracking-tighter uppercase italic ${submitted ? 'text-white' : 'text-emerald-900'}`}>{submitted ? "Reflection Synchronized" : "Weekly Metacognitive Analysis"}</h3>
-                        <p className={`text-[10px] font-black uppercase tracking-widest pl-1 ${submitted ? 'text-white/70' : 'text-emerald-600/50'}`}>{submitted ? "Your weekly self-assessment has been authenticated." : "Self-Correction Cycle: Week 1 Reflection"}</p>
+                        <p className={`text-[10px] font-black uppercase tracking-widest pl-1 ${submitted ? 'text-white/70' : 'text-emerald-600/50'}`}>{submitted ? "Your weekly self-assessment has been authenticated." : `Self-Correction Cycle: Week ${data.week} Reflection`}</p>
                     </div>
                 </div>
                 {submitted && (

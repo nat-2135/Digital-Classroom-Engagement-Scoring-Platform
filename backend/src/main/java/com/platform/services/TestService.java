@@ -11,13 +11,19 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional
 public class TestService {
     @Autowired
     private WeeklyTestRepository weeklyTestRepository;
 
     @Autowired
     private TestSubmissionRepository testSubmissionRepository;
+
+    @Autowired
+    private EngagementService engagementService;
 
     @Autowired
     private BadgeService badgeService;
@@ -52,16 +58,16 @@ public class TestService {
             maxPossible = questions.size() * marksPerQ;
 
             for (java.util.Map<String, Object> q : questions) {
+                if (q == null) continue;
                 String qId = String.valueOf(q.get("id"));
                 String correct = String.valueOf(q.get("correctAnswer"));
-                String studentAns = studentAnswers.get(qId);
+                String studentAns = studentAnswers != null ? studentAnswers.get(qId) : null;
                 
                 if (correct != null && studentAns != null && correct.trim().equalsIgnoreCase(studentAns.trim())) {
                     totalScore += marksPerQ;
                 }
             }
         } catch (Exception e) {
-            // Fallback to random if parsing fails, but ideally log this
             totalScore = 0;
         }
 
@@ -75,6 +81,7 @@ public class TestService {
                 .build();
 
         TestSubmission saved = testSubmissionRepository.save(submission);
+        engagementService.updateEngagementFromTest(student, test.getWeekNumber());
         badgeService.checkAndAwardBadges(student.getId());
         return saved;
     }

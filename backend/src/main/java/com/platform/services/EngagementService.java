@@ -39,7 +39,18 @@ public class EngagementService {
         else if ("LATE".equalsIgnoreCase(assignmentStatus))
             assignmentValue = 10;
 
-        double score = (attendance * 0.5) + ((participation / 5.0) * 100 * 0.3) + assignmentValue;
+        // Enhanced score: Attendance (30%) + Participation (20%) + Assignment (20%) + Test (30%)
+        // Attendance (0.3 of 100) = 30 max
+        // Participation (0.2 of 100) = 20 max (if p=5)
+        // Assignment is already coded as max 20
+        // Test: if totalMarks is 0 or latestSub is null, use 0. Otherwise scale to 30.
+        
+        double testValue = 0;
+        if (latestSub != null && latestSub.getTotalMarks() > 0) {
+            testValue = (latestSub.getScore() * 1.0 / latestSub.getTotalMarks()) * 30.0;
+        }
+
+        double score = (attendance * 0.3) + ((participation / 5.0) * 100 * 0.2) + assignmentValue + testValue;
 
         EngagementRecord record = existing.orElse(new EngagementRecord());
         record.setStudent(student);
@@ -69,5 +80,19 @@ public class EngagementService {
 
     public List<EngagementRecord> getAllHistory() {
         return engagementRecordRepository.findAll();
+    }
+
+    public EngagementRecord updateEngagementFromTest(User student, Integer week) {
+        // Find existing or use defaults
+        EngagementRecord existing = engagementRecordRepository.findByStudentIdAndWeek(student.getId(), week)
+            .orElse(EngagementRecord.builder()
+                .student(student)
+                .week(week)
+                .attendance(100.0) // Assume 100% if not yet marked by teacher
+                .participation(5)   // Assume 5/5 if not yet marked by teacher
+                .assignmentStatus("ON_TIME")
+                .build());
+        
+        return saveEngagement(student.getId(), week, existing.getAttendance(), existing.getParticipation(), existing.getAssignmentStatus());
     }
 }

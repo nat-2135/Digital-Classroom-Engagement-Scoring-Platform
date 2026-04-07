@@ -1,81 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/axiosInstance';
-import { ClipboardList, Clock, ArrowRight, Save, CheckCircle2, AlertCircle, XCircle, Timer, Award, ChevronRight, History, Target, Zap, PenTool } from 'lucide-react';
+import { ClipboardList, Clock, ArrowRight, ArrowLeft, Save, CheckCircle2, AlertCircle, XCircle, Timer, Award, ChevronRight, History, Target, Zap, PenTool, RefreshCcw } from 'lucide-react';
 
 const WeeklyTest = () => {
+    const [view, setView] = useState('list'); // 'list' or 'test'
+    const [allTests, setAllTests] = useState([]);
     const [test, setTest] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [testState, setTestState] = useState('available'); // available, ongoing, submitted
+    const [testState, setTestState] = useState('available');
     const [currentQ, setCurrentQ] = useState(0);
     const [answers, setAnswers] = useState({});
     const [timeLeft, setTimeLeft] = useState(0);
     const [submission, setSubmission] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [testSubmissions, setTestSubmissions] = useState([]);
+
+    const fetchData = async () => {
+        try {
+            const [testsResp, fullEngResp] = await Promise.all([
+                api.get('/api/student/tests/current'),
+                api.get('/api/student/full-engagement')
+            ]);
+            
+            const subs = fullEngResp.data?.testHistory || [];
+            setTestSubmissions(subs);
+            setAllTests(testsResp.data || []);
+        } catch (e) {
+            console.error("Fetch failure", e);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchTest = async () => {
-            try {
-                const resp = await api.get('/api/student/tests/current');
-                if (resp.data && resp.data.length > 0) {
-                    const submissionsResp = await api.get(`/api/student/full-engagement`);
-                    const submittedIds = (submissionsResp.data.testHistory || []).map(s => s.test.id);
-
-                    const unsubmittedTests = resp.data.filter(t => !submittedIds.includes(t.id));
-                    let activeTest = unsubmittedTests.length > 0 
-                        ? unsubmittedTests[unsubmittedTests.length - 1] 
-                        : resp.data[resp.data.length - 1];
-
-                    // Robust questioning parsing logic
-                    let questions = [];
-                    if (activeTest?.questions) {
-                        if (typeof activeTest.questions === 'string') {
-                            try {
-                                questions = JSON.parse(activeTest.questions);
-                            } catch(e) {
-                                console.error("Failed to parse test questions", e);
-                                questions = [];
-                            }
-                        } else if (Array.isArray(activeTest.questions)) {
-                            questions = activeTest.questions;
-                        }
-                    }
-                    
-                    // Sanitize questions - ensure each has expected properties
-                    const cleanQuestions = (questions || []).map(q => ({
-                        id: q?.id || Math.random(),
-                        type: q?.type || 'MC',
-                        text: q?.text || 'Standard Inquiry Vector',
-                        options: Array.isArray(q?.options) ? q.options : [],
-                        correctAnswer: q?.correctAnswer || ''
-                    }));
-
-                    const sanitizedTest = {
-                        ...activeTest,
-                        questions: cleanQuestions,
-                        marksPerQuestion: activeTest?.marksPerQuestion || 10,
-                        timeLimit: activeTest?.timeLimit || 30,
-                        title: activeTest?.title || 'Academic Evaluation Protocol',
-                        subject: activeTest?.subject || 'Behavioral Sciences'
-                    };
-                    
-                    setTest(sanitizedTest);
-                    setTimeLeft(sanitizedTest.timeLimit * 60);
-
-                    // Check if already submitted with safe navigation
-                    const existing = (submissionsResp.data?.testHistory || []).find(s => s?.test?.id === sanitizedTest.id);
-                    if (existing) {
-                        setSubmission(existing);
-                        setTestState('submitted');
-                    }
-                }
-            } catch (e) {
-                console.error("Test fetch failed", e);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchTest();
+        fetchData();
     }, []);
+
+    const startTest = (activeTest) => {
+        // Robust questioning parsing logic
+        let questions = [];
+        if (activeTest?.questions) {
+            if (typeof activeTest.questions === 'string') {
+                try {
+                    questions = JSON.parse(activeTest.questions);
+                } catch(e) {
+                    questions = [];
+                }
+            } else if (Array.isArray(activeTest.questions)) {
+                questions = activeTest.questions;
+            }
+        }
+        
+        const cleanQuestions = (questions || []).map(q => ({
+            id: q?.id || Math.random(),
+            type: q?.type || 'MC',
+            text: q?.text || 'Standard Inquiry Vector',
+            options: Array.isArray(q?.options) ? q.options : [],
+            correctAnswer: q?.correctAnswer || ''
+        }));
+
+        const sanitizedTest = {
+            ...activeTest,
+            questions: cleanQuestions,
+            marksPerQuestion: activeTest?.marksPerQuestion || 10,
+            timeLimit: activeTest?.timeLimit || 30
+        };
+        
+        setTest(sanitizedTest);
+        setTimeLeft(sanitizedTest.timeLimit * 60);
+
+        const existing = testSubmissions.find(s => s?.test?.id === sanitizedTest.id);
+        if (existing) {
+            setSubmission(existing);
+            setTestState('submitted');
+        } else {
+            setTestState('available');
+        }
+        setView('test');
+    };
 
     useEffect(() => {
         let timer;
@@ -109,15 +111,65 @@ const WeeklyTest = () => {
     };
 
     if (loading) return <div className="text-center p-20 text-emerald-700 animate-pulse font-black uppercase tracking-widest text-xs italic">Synchronizing Assessment Database...</div>;
-    if (!test) return (
-        <div className="text-center p-24 bg-gray-50 border border-dashed border-gray-200 rounded-[50px] flex flex-col items-center gap-8 shadow-inner overflow-hidden relative max-w-3xl mx-auto">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-300"><ClipboardList size={28} /></div>
-            <div className="flex flex-col gap-2">
-                <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">No Active Assessments</h3>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Return later for newly deployed evaluation protocols.</p>
+
+    if (view === 'list') {
+        return (
+            <div className="flex flex-col gap-10 animate-in fade-in duration-700">
+                <div className="flex items-center justify-between border-b-2 border-gray-100 pb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="p-4 bg-gray-900 rounded-2xl text-white shadow-xl"><ClipboardList size={22} /></div>
+                        <div className="flex flex-col">
+                            <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">Weekly Assessment Registry</h2>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Protocol Identification & Verification Phase</p>
+                        </div>
+                    </div>
+                    <button onClick={fetchData} className="px-6 py-3 bg-white border border-gray-200 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-gray-50 flex items-center gap-2 shadow-sm transition-all"><RefreshCcw size={12} /> Sync Registry</button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {allTests.length === 0 ? (
+                        <div className="col-span-full py-24 bg-gray-50 border border-dashed border-gray-200 rounded-[50px] flex flex-col items-center gap-6 text-center">
+                            <AlertCircle size={40} className="text-gray-200" />
+                            <div className="flex flex-col gap-1">
+                                <h4 className="text-xl font-black text-gray-800 uppercase italic">No Protocols Found</h4>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Awaiting deployment from instructional faculty.</p>
+                            </div>
+                        </div>
+                    ) : (
+                        allTests.map((t) => {
+                            const isSubmitted = testSubmissions.some(s => s?.test?.id === t.id);
+                            const submissionData = testSubmissions.find(s => s?.test?.id === t.id);
+                            
+                            return (
+                                <div key={t.id} className="bg-white border border-gray-100 rounded-[40px] p-8 shadow-sm hover:shadow-2xl hover:border-emerald-500 transition-all duration-500 group flex flex-col gap-8 relative overflow-hidden">
+                                     <div className={`absolute top-0 right-0 px-6 py-2 rounded-bl-3xl text-[9px] font-black uppercase tracking-widest ${isSubmitted ? 'bg-emerald-600 text-white' : 'bg-amber-400 text-black'}`}>
+                                        {isSubmitted ? 'COMPLETED' : 'READY'}
+                                    </div>
+                                    <div className="flex flex-col gap-1 mt-4">
+                                        <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter italic group-hover:text-emerald-600 transition-colors">{t.title}</h3>
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.subject} | Week {t.weekNumber}</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col gap-1 items-center">
+                                            <span className="text-[8px] font-black text-gray-400 uppercase">Limit</span>
+                                            <span className="text-xs font-black text-gray-800">{t.timeLimit} MIN</span>
+                                        </div>
+                                        <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex flex-col gap-1 items-center">
+                                            <span className="text-[8px] font-black text-gray-400 uppercase">Score</span>
+                                            <span className="text-xs font-black text-gray-800">{isSubmitted ? `${Math.round(submissionData?.score)} P` : 'TBD'}</span>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => startTest(t)} className={`w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isSubmitted ? 'bg-gray-900 text-white hover:bg-black' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xl shadow-emerald-100'}`}>
+                                        {isSubmitted ? 'Review Performance' : 'Initialize Protocol'}
+                                    </button>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 
     if (testState === 'available') {
         if (!test.questions || test.questions.length === 0) {
@@ -164,12 +216,20 @@ const WeeklyTest = () => {
                         <p className="text-sm text-gray-600 leading-relaxed pl-1">{test.instructions || "Standard academic evaluation protocol detected. Proceeed with maximum fidelity."}</p>
                     </div>
 
-                    <button
-                        onClick={() => setTestState('ongoing')}
-                        className="flex items-center justify-center gap-4 w-full bg-emerald-600 text-white py-7 text-[11px] font-black uppercase tracking-[0.3em] rounded-3xl shadow-2xl shadow-emerald-200 hover:bg-emerald-700 hover:scale-105 transition-all group"
-                    >
-                        Initialize Protocol <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                    </button>
+                    <div className="flex flex-col gap-4">
+                        <button
+                            onClick={() => setTestState('ongoing')}
+                            className="flex items-center justify-center gap-4 w-full bg-emerald-600 text-white py-7 text-[11px] font-black uppercase tracking-[0.3em] rounded-3xl shadow-2xl shadow-emerald-200 hover:bg-emerald-700 hover:scale-[1.02] transition-all group"
+                        >
+                            Initialize Protocol <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                        </button>
+                        <button
+                            onClick={() => setView('list')}
+                            className="w-full py-5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-900 border-2 border-gray-100 rounded-3xl hover:bg-gray-50 transition-all"
+                        >
+                            Return to Registry
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -338,10 +398,10 @@ const WeeklyTest = () => {
                     </div>
 
                     <button
-                        onClick={() => (window.location.href = '/')}
+                        onClick={() => setView('list')}
                         className="w-full py-5 bg-emerald-800/30 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-2xl border border-emerald-400/20 hover:bg-emerald-800/50 transition-all transition-all active:scale-[0.98] mt-auto"
                     >
-                        Finalize Return
+                        Back to Registry
                     </button>
                 </div>
 
