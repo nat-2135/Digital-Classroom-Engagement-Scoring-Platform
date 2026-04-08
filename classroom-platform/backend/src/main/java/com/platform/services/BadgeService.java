@@ -3,12 +3,14 @@ package com.platform.services;
 import com.platform.models.*;
 import com.platform.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@SuppressWarnings("null")
 public class BadgeService {
 
     @Autowired
@@ -28,7 +30,7 @@ public class BadgeService {
 
 
 
-    public void checkAndAwardBadges(Long studentId) {
+    public void checkAndAwardBadges(@NonNull Long studentId) {
         User student = userRepository.findById(studentId).orElseThrow();
         List<EngagementRecord> history = engagementRecordRepository.findByStudentIdOrderByWeekAsc(studentId);
         List<TestSubmission> testSubmissions = testSubmissionRepository.findByStudentId(studentId);

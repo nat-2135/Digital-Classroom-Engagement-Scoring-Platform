@@ -21,13 +21,4 @@ public class AuthController {
         User user = authService.getCurrentUser();
         return ResponseEntity.ok(Map.of("token", jwt, "user", user));
     }
-
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        try {
-            return ResponseEntity.ok(authService.registerUser(user));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
-        }
-    }
 }

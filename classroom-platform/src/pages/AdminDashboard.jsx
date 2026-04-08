@@ -234,10 +234,10 @@ const CrudTable = ({ type }) => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        {users.map(u => (
-                            <tr key={u.id} className="hover:bg-gray-50">
-                                <td className="px-6 py-4">{u.id}</td>
-                                <td className="px-6 py-4 font-medium">{u.name}</td>
+                        {users.map((u, idx) => (
+                            <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-10 py-5 text-sm font-bold text-emerald-600">#{idx + 1}</td>
+                                <td className="px-10 py-5 font-bold text-gray-900 tracking-tight">{u.name}</td>
                                 <td className="px-6 py-4">{u.email}</td>
                                 {type === 'STUDENT' && <td className="px-6 py-4">{u.role}</td>}
                                 <td className="px-6 py-4">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</td>

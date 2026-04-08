@@ -13,6 +13,7 @@ import com.platform.services.LeaderboardService;
 import com.platform.services.SelfAssessmentService;
 import com.platform.services.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -74,14 +75,34 @@ public class AdminController {
     @GetMapping("/all-students/engagement-history")
     public ResponseEntity<List<EngagementDTO>> getAllStudentsHistory() {
         List<User> students = userRepository.findByRole(Role.STUDENT);
-        List<EngagementDTO> history = students.stream().map(student -> EngagementDTO.builder()
+        
+        // Optimizing by fetching all required data in bulk to avoid N+1 queries
+        List<com.platform.models.EngagementRecord> allHistory = engagementService.getAllHistory();
+        List<com.platform.models.TestSubmission> allSubmissions = testService.getAllSubmissions();
+        List<com.platform.models.SelfAssessment> allAssessments = selfAssessmentService.getAllAssessments();
+
+        List<EngagementDTO> history = students.stream().map(student -> {
+            List<com.platform.models.EngagementRecord> studentHistory = allHistory.stream()
+                .filter(h -> h.getStudent().getId().equals(student.getId()))
+                .collect(Collectors.toList());
+                
+            List<com.platform.models.TestSubmission> studentSubmissions = allSubmissions.stream()
+                .filter(s -> s.getStudent().getId().equals(student.getId()))
+                .collect(Collectors.toList());
+                
+            List<com.platform.models.SelfAssessment> studentAssessments = allAssessments.stream()
+                .filter(a -> a.getStudent().getId().equals(student.getId()))
+                .collect(Collectors.toList());
+
+            return EngagementDTO.builder()
                 .studentId(student.getId())
                 .studentName(student.getName())
-                .history(engagementService.getStudentHistory(student.getId()))
-                .testHistory(testService.getStudentSubmissions(student.getId()))
-                .assessments(selfAssessmentService.getAllAssessments().stream()
-                        .filter(a -> a.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
+                .history(studentHistory)
+                .testHistory(studentSubmissions)
+                .assessments(studentAssessments)
+                .build();
+        }).collect(Collectors.toList());
+        
         return ResponseEntity.ok(history);
     }
 
@@ -128,7 +149,7 @@ public class AdminController {
     }
 
     @PutMapping("/students/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody UserRequestDTO dto) {
+    public ResponseEntity<?> updateStudent(@PathVariable @NonNull Long id, @RequestBody UserRequestDTO dto) {
         try {
             User updated = adminService.updateStudent(id, dto);
             return ResponseEntity.ok(UserResponseDTO.builder()
@@ -144,7 +165,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/students/{id}")
-    public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
+    public ResponseEntity<?> deleteStudent(@PathVariable @NonNull Long id) {
         try {
             adminService.deleteStudent(id);
             return ResponseEntity.ok(Map.of("success", true, "message", "Student deleted"));
@@ -196,7 +217,7 @@ public class AdminController {
     }
 
     @PutMapping("/teachers/{id}")
-    public ResponseEntity<?> updateTeacher(@PathVariable Long id, @RequestBody UserRequestDTO dto) {
+    public ResponseEntity<?> updateTeacher(@PathVariable @NonNull Long id, @RequestBody UserRequestDTO dto) {
         try {
             User updated = adminService.updateTeacher(id, dto);
             return ResponseEntity.ok(UserResponseDTO.builder()
@@ -212,7 +233,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/teachers/{id}")
-    public ResponseEntity<?> deleteTeacher(@PathVariable Long id) {
+    public ResponseEntity<?> deleteTeacher(@PathVariable @NonNull Long id) {
         try {
             adminService.deleteTeacher(id);
             return ResponseEntity.ok(Map.of("success", true, "message", "Teacher deleted"));

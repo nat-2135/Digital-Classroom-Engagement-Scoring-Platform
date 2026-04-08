@@ -84,6 +84,8 @@ const WeeklyHistory = () => {
     );
 };
 
+import FeedbackBar from '../components/student/FeedbackBar';
+
 const StudentDashboard = ({ user }) => {
     const [activePage, setActivePage] = useState('dashboard');
     const [studentData, setStudentData] = useState(null);
@@ -98,6 +100,7 @@ const StudentDashboard = ({ user }) => {
                     name: user?.name,
                     attendance: latest?.attendance,
                     currentScore: Math.round(latest?.engagementScore || 0),
+                    week: res.data.week || 1,
                     badgeCount: 3
                 });
             })
@@ -120,7 +123,7 @@ const StudentDashboard = ({ user }) => {
             case 'leaderboard':
                 return <Leaderboard />;
             case 'assessment':
-                return <SelfAssessmentForm />;
+                return <SelfAssessmentForm currentWeek={studentData?.week} />;
             case 'history':
                 return <WeeklyHistory />;
             default:
@@ -139,6 +142,7 @@ const StudentDashboard = ({ user }) => {
                     </ErrorBoundary>
                 </div>
             </main>
+            <FeedbackBar />
         </div>
     );
 };

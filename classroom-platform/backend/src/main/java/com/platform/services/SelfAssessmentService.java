@@ -3,6 +3,7 @@ package com.platform.services;
 import com.platform.models.SelfAssessment;
 import com.platform.repository.SelfAssessmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@SuppressWarnings("null")
 public class SelfAssessmentService {
     @Autowired
     private SelfAssessmentRepository selfAssessmentRepository;
@@ -17,7 +19,7 @@ public class SelfAssessmentService {
     @Autowired
     private BadgeService badgeService;
 
-    public SelfAssessment submitAssessment(SelfAssessment assessment) {
+    public SelfAssessment submitAssessment(@NonNull SelfAssessment assessment) {
         assessment.setSubmittedAt(LocalDateTime.now());
         SelfAssessment saved = selfAssessmentRepository.save(assessment);
 
@@ -39,7 +41,7 @@ public class SelfAssessmentService {
         return selfAssessmentRepository.findAll();
     }
 
-    public void addTeacherNote(Long studentId, Integer week, String note) {
+    public void addTeacherNote(@NonNull Long studentId, @NonNull Integer week, String note) {
         SelfAssessment assessment = selfAssessmentRepository.findByStudentIdAndWeek(studentId, week).orElseThrow();
         assessment.setTeacherNote(note);
         selfAssessmentRepository.save(assessment);

@@ -5,11 +5,13 @@ import com.platform.models.User;
 import com.platform.repository.EngagementRecordRepository;
 import com.platform.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@SuppressWarnings("null")
 public class EngagementService {
     @Autowired
     private EngagementRecordRepository engagementRecordRepository;
@@ -23,7 +25,7 @@ public class EngagementService {
     @Autowired
     private com.platform.repository.TestSubmissionRepository testSubmissionRepository;
 
-    public EngagementRecord saveEngagement(Long studentId, Integer week, Double attendance, Integer participation,
+    public EngagementRecord saveEngagement(@NonNull Long studentId, @NonNull Integer week, Double attendance, Integer participation,
             String assignmentStatus) {
         User student = userRepository.findById(studentId).orElseThrow();
 
@@ -39,7 +41,18 @@ public class EngagementService {
         else if ("LATE".equalsIgnoreCase(assignmentStatus))
             assignmentValue = 10;
 
-        double score = (attendance * 0.5) + ((participation / 5.0) * 100 * 0.3) + assignmentValue;
+        // Enhanced score: Attendance (30%) + Participation (20%) + Assignment (20%) + Test (30%)
+        // Attendance (0.3 of 100) = 30 max
+        // Participation (0.2 of 100) = 20 max (if p=5)
+        // Assignment is already coded as max 20
+        // Test: if totalMarks is 0 or latestSub is null, use 0. Otherwise scale to 30.
+        
+        double testValue = 0;
+        if (latestSub != null && latestSub.getTotalMarks() > 0) {
+            testValue = (latestSub.getScore() * 1.0 / latestSub.getTotalMarks()) * 30.0;
+        }
+
+        double score = (attendance * 0.3) + ((participation / 5.0) * 100 * 0.2) + assignmentValue + testValue;
 
         EngagementRecord record = existing.orElse(new EngagementRecord());
         record.setStudent(student);
@@ -57,7 +70,7 @@ public class EngagementService {
         return saved;
     }
 
-    public List<EngagementRecord> getStudentHistory(Long studentId) {
+    public List<EngagementRecord> getStudentHistory(@NonNull Long studentId) {
         return engagementRecordRepository.findByStudentIdOrderByWeekAsc(studentId);
     }
 
@@ -65,5 +78,23 @@ public class EngagementService {
         if (week != null)
             return engagementRecordRepository.findByWeek(week);
         return engagementRecordRepository.findAll();
+    }
+
+    public List<EngagementRecord> getAllHistory() {
+        return engagementRecordRepository.findAll();
+    }
+
+    public EngagementRecord updateEngagementFromTest(User student, Integer week) {
+        // Find existing or use defaults
+        EngagementRecord existing = engagementRecordRepository.findByStudentIdAndWeek(student.getId(), week)
+            .orElse(EngagementRecord.builder()
+                .student(student)
+                .week(week)
+                .attendance(100.0) // Assume 100% if not yet marked by teacher
+                .participation(5)   // Assume 5/5 if not yet marked by teacher
+                .assignmentStatus("ON_TIME")
+                .build());
+        
+        return saveEngagement(student.getId(), week, existing.getAttendance(), existing.getParticipation(), existing.getAssignmentStatus());
     }
 }

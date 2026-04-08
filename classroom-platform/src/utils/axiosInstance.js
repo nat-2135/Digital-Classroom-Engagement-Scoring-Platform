@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080'
+  baseURL: import.meta.env.VITE_API_URL || 'https://digital-classroom-engagement-scoring.onrender.com'
 });
 
 api.interceptors.request.use(config => {
@@ -13,7 +13,7 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   res => res,
   err => {
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 || err.response?.status === 403) {
       localStorage.clear();
       window.location.href = '/login';
     }

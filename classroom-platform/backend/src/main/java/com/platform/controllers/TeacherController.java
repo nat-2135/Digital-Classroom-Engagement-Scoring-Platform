@@ -4,6 +4,7 @@ import com.platform.dto.EngagementDTO;
 import com.platform.models.*;
 import com.platform.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/teacher")
 @CrossOrigin("*")
+@SuppressWarnings("null")
 public class TeacherController {
     @Autowired
     private EngagementService engagementService;
@@ -49,21 +51,29 @@ public class TeacherController {
     }
 
     @GetMapping("/students/engagement-history")
-    public ResponseEntity<List<EngagementDTO>> getAllStudentsHistory() {
-        List<User> students = userRepository.findByRole(Role.STUDENT);
-        List<EngagementDTO> history = students.stream().map(student -> EngagementDTO.builder()
-                .studentId(student.getId())
-                .studentName(student.getName())
-                .history(engagementService.getStudentHistory(student.getId()))
-                .testHistory(testService.getStudentSubmissions(student.getId()))
-                .assessments(selfAssessmentService.getAllAssessments().stream()
-                        .filter(a -> a.getStudent().getId().equals(student.getId())).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
-        return ResponseEntity.ok(history);
+    public ResponseEntity<?> getAllStudentsHistory() {
+        try {
+            List<User> students = userRepository.findByRole(Role.STUDENT);
+            List<EngagementRecord> allHistory = engagementService.getAllHistory();
+            List<com.platform.models.TestSubmission> allSubmissions = testService.getAllSubmissions();
+            List<SelfAssessment> allAssessments = selfAssessmentService.getAllAssessments();
+
+            List<com.platform.dto.EngagementDTO> history = students.stream().map(student -> com.platform.dto.EngagementDTO.builder()
+                    .studentId(student.getId())
+                    .studentName(student.getName())
+                    .history(allHistory.stream().filter(h -> h.getStudent() != null && student.getId().equals(h.getStudent().getId())).collect(Collectors.toList()))
+                    .testHistory(allSubmissions.stream().filter(s -> s.getStudent() != null && student.getId().equals(s.getStudent().getId())).collect(Collectors.toList()))
+                    .assessments(allAssessments.stream().filter(a -> a.getStudent() != null && student.getId().equals(a.getStudent().getId())).collect(Collectors.toList()))
+                    .build()).collect(Collectors.toList());
+            return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Internal Platform Error: " + e.getMessage()));
+        }
     }
 
     @GetMapping("/students/{id}/full-engagement")
-    public ResponseEntity<EngagementDTO> getStudentFullEngagement(@PathVariable Long id) {
+    public ResponseEntity<EngagementDTO> getStudentFullEngagement(@PathVariable @NonNull Long id) {
         User student = userRepository.findById(id).orElseThrow();
         EngagementDTO dto = EngagementDTO.builder()
                 .studentId(student.getId())
@@ -123,7 +133,7 @@ public class TeacherController {
     }
 
     @GetMapping("/students/{id}/latest-engagement")
-    public ResponseEntity<EngagementRecord> getLatestEngagement(@PathVariable Long id) {
+    public ResponseEntity<EngagementRecord> getLatestEngagement(@PathVariable @NonNull Long id) {
         List<EngagementRecord> history = engagementService.getStudentHistory(id);
         if (history.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(history.get(history.size() - 1));
@@ -131,14 +141,29 @@ public class TeacherController {
 
     @PostMapping("/engagement")
     public ResponseEntity<?> saveEngagement(@RequestBody Map<String, Object> request) {
-        Long studentId = Long.valueOf(request.get("studentId").toString());
-        Integer week = Integer.valueOf(request.get("week").toString());
-        Double attendance = Double.valueOf(request.get("attendance").toString());
-        Integer participation = Integer.valueOf(request.get("participation").toString());
-        String assignmentStatus = request.get("assignmentStatus").toString();
+        try {
+            Object sId = request.get("studentId");
+            if (sId == null || sId.toString().isEmpty()) return ResponseEntity.badRequest().body(Map.of("error", "Student ID missing"));
+            Long studentId = Long.valueOf(sId.toString());
 
-        return ResponseEntity
-                .ok(engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus));
+            // Numeric safety parsing
+            Integer week = 1;
+            try { week = Integer.valueOf(request.get("week").toString()); } catch (Exception e) {}
+            
+            Double attendance = 0.0;
+            try { attendance = Double.valueOf(request.get("attendance").toString()); } catch (Exception e) {}
+            
+            Integer participation = 1;
+            try { participation = Integer.valueOf(request.get("participation").toString()); } catch (Exception e) {}
+            
+            String assignmentStatus = request.get("assignmentStatus") != null ? request.get("assignmentStatus").toString() : "NOT_SUBMITTED";
+
+            EngagementRecord saved = engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Critical Save Failure: " + e.getMessage()));
+        }
     }
 
     @PutMapping("/engagement/{id}")

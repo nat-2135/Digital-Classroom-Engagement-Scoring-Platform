@@ -8,6 +8,7 @@ import com.platform.repository.UserRepository;
 import com.platform.repository.EngagementRecordRepository;
 import com.platform.repository.StudentBadgeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class LeaderboardService {
     @Autowired
     private com.platform.repository.TestSubmissionRepository testSubmissionRepository;
 
-    public List<LeaderboardDTO> getClassLeaderboard(Long currentStudentId, Integer week) {
+    public List<LeaderboardDTO> getClassLeaderboard(@NonNull Long currentStudentId, Integer week) {
         List<User> students = userRepository.findByRole(Role.STUDENT);
         List<LeaderboardDTO> board = new ArrayList<>();
 
@@ -59,6 +60,7 @@ public class LeaderboardService {
                     com.platform.models.TestSubmission latestSub = subs.get(subs.size() - 1);
                     if (latestSub.getTotalMarks() != null && latestSub.getTotalMarks() > 0) {
                         testScore = (double) latestSub.getScore() / latestSub.getTotalMarks() * 100.0;
+                        if (Double.isNaN(testScore) || Double.isInfinite(testScore)) testScore = 0.0;
                     }
                 }
             } else if (!records.isEmpty()) {
@@ -73,6 +75,7 @@ public class LeaderboardService {
 
                 if (latest.getTestScore() != null && latest.getTestTotalMarks() != null && latest.getTestTotalMarks() > 0) {
                     testScore = (double) latest.getTestScore() / latest.getTestTotalMarks() * 100.0;
+                    if (Double.isNaN(testScore) || Double.isInfinite(testScore)) testScore = 0.0;
                 }
             }
 
@@ -98,7 +101,11 @@ public class LeaderboardService {
             board.add(dto);
         }
 
-        board.sort((a, b) -> Double.compare(b.getEngagementScore(), a.getEngagementScore()));
+        board.sort((a, b) -> {
+            Double s1 = a.getEngagementScore() != null ? a.getEngagementScore() : 0.0;
+            Double s2 = b.getEngagementScore() != null ? b.getEngagementScore() : 0.0;
+            return Double.compare(s2, s1);
+        });
 
         for (int i = 0; i < board.size(); i++) {
             board.get(i).setRank(i + 1);
@@ -107,7 +114,7 @@ public class LeaderboardService {
         return board;
     }
 
-    public void updatePrivacy(Long studentId, boolean showName) {
+    public void updatePrivacy(@NonNull Long studentId, boolean showName) {
         User user = userRepository.findById(studentId).orElseThrow(() -> new RuntimeException("User not found"));
         user.setShowLeaderboardName(showName);
         userRepository.save(user);

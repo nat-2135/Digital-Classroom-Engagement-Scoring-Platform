@@ -1,6 +1,7 @@
 package com.platform.models;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -160,12 +161,14 @@ public class SelfAssessment {
             return this;
         }
 
+        @NonNull
         public SelfAssessment build() {
             return new SelfAssessment(id, student, week, participationRating, confidenceRating, comments, teacherNote,
                     submittedAt);
         }
     }
 
+    @NonNull
     public static SelfAssessmentBuilder builder() {
         return new SelfAssessmentBuilder();
     }
