@@ -2,6 +2,7 @@ package com.platform.models;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.lang.NonNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -80,7 +81,9 @@ public class User implements Serializable {
         public UserBuilder role(Role role) { this.role = role; return this; }
         public UserBuilder showLeaderboardName(boolean showLeaderboardName) { this.showLeaderboardName = showLeaderboardName; return this; }
         public UserBuilder createdAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
+        @NonNull
         public User build() { return new User(id, name, email, password, role, showLeaderboardName, createdAt); }
     }
+    @NonNull
     public static UserBuilder builder() { return new UserBuilder(); }
 }

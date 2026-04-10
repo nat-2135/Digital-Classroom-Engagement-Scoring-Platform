@@ -13,15 +13,22 @@ import ErrorBoundary from '../components/shared/ErrorBoundary';
 import api from '../utils/axiosInstance';
 
 const TeacherEngagementEnter = ({ studentsList, selectedStudentId, setSelectedStudentId, formState, setFormState, toast, setToast, handleSaveScore, hasExisting, refreshTrigger }) => {
-    const [weekTestInfo, setWeekTestInfo] = useState({ score: 0, total: 100, exists: false });
-
+    
     useEffect(() => {
         if (selectedStudentId && formState.week) {
             api.get(`/api/teacher/students/${selectedStudentId}/full-engagement`)
                 .then(res => {
-                    const test = res.data.testHistory?.find(t => t.test.weekNumber === parseInt(formState.week));
-                    if (test) setWeekTestInfo({ score: test.score, total: test.totalMarks, exists: true });
-                    else setWeekTestInfo({ score: 0, total: 100, exists: false });
+                    const record = res.data.history?.find(h => h.week === parseInt(formState.week));
+                    if (record && !hasExisting) {
+                         setFormState(prev => ({
+                             ...prev,
+                             attendance: record.attendance,
+                             participation: record.participation,
+                             assignmentStatus: record.assignmentStatus,
+                             testScore: record.testScore || 0,
+                             testTotalMarks: record.testTotalMarks || 100
+                         }));
+                    }
                 }).catch(() => {});
         }
     }, [selectedStudentId, formState.week]);
@@ -29,10 +36,15 @@ const TeacherEngagementEnter = ({ studentsList, selectedStudentId, setSelectedSt
     const calculateScore = () => {
         const att = parseFloat(formState.attendance) || 0;
         const part = parseFloat(formState.participation) || 0;
+        const tScore = parseFloat(formState.testScore) || 0;
+        const tTotal = parseFloat(formState.testTotalMarks) || 100;
+        
         let pScore = 0;
         if (formState.assignmentStatus === 'ON_TIME') pScore = 20;
         if (formState.assignmentStatus === 'LATE') pScore = 10;
-        const score = (att * 0.5) + ((part / 5) * 100 * 0.3) + pScore;
+        
+        const testValue = tTotal > 0 ? (tScore / tTotal) * 30.0 : 0;
+        const score = (att * 0.3) + ((part / 5) * 100 * 0.2) + pScore + testValue;
         return score.toFixed(1);
     };
 
@@ -75,24 +87,28 @@ const TeacherEngagementEnter = ({ studentsList, selectedStudentId, setSelectedSt
                                 </select>
                             </div>
                         </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                            <div className="bg-emerald-50/50 p-8 rounded-[30px] border-2 border-emerald-100 flex flex-col gap-1 transition-all hover:shadow-lg">
-                                <span className="text-[10px] font-black text-emerald-800 uppercase tracking-widest opacity-60">Calculated Score Preview</span>
-                                <span className="text-4xl font-black text-emerald-600 tracking-tighter">{calculateScore()} <span className="text-sm font-bold opacity-30">/ 100</span></span>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Weekly Test Score</label>
+                                <input type="number" className="w-full border-2 border-gray-50 p-4 rounded-2xl focus:border-emerald-500 outline-none font-bold bg-white shadow-sm" value={formState.testScore} onChange={e => setFormState({ ...formState, testScore: e.target.value })} />
                             </div>
-                            <div className={`p-8 rounded-[30px] border-2 flex flex-col gap-1 transition-all hover:shadow-lg ${weekTestInfo.exists ? 'bg-blue-50/50 border-blue-100' : 'bg-gray-50 border-gray-100 opacity-50'}`}>
-                                <span className={`text-[10px] font-black uppercase tracking-widest opacity-60 ${weekTestInfo.exists ? 'text-blue-800' : 'text-gray-500'}`}>Weekly Assessment Result</span>
-                                <span className={`text-4xl font-black tracking-tighter ${weekTestInfo.exists ? 'text-blue-600' : 'text-gray-400'}`}>
-                                    {weekTestInfo.exists ? weekTestInfo.score.toFixed(1) : '—'} 
-                                    <span className="text-sm font-bold opacity-30"> / {weekTestInfo.exists ? weekTestInfo.total : '00'}</span>
-                                </span>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Test Total Marks</label>
+                                <input type="number" className="w-full border-2 border-gray-50 p-4 rounded-2xl focus:border-emerald-500 outline-none font-bold bg-white shadow-sm" value={formState.testTotalMarks} onChange={e => setFormState({ ...formState, testTotalMarks: e.target.value })} />
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-4">
+                            <div className="bg-emerald-50/50 p-8 rounded-[30px] border-2 border-emerald-100 flex flex-col gap-1 transition-all hover:shadow-lg">
+                                <span className="text-[10px] font-black text-emerald-800 uppercase tracking-widest opacity-60">Engagement Score Preview (Weighted)</span>
+                                <span className="text-4xl font-black text-emerald-600 tracking-tighter">{calculateScore()} <span className="text-sm font-bold opacity-30">/ 100</span></span>
                             </div>
                         </div>
 
                         <div className="flex gap-4 mt-6">
                             {hasExisting ? (
-                                <button onClick={handleSaveScore} className="flex-1 bg-white border-4 border-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white py-6 rounded-[30px] text-sm font-black uppercase tracking-widest transition-all shadow-xl active:scale-[0.98]">Synchronize Record</button>
+                                <button onClick={handleSaveScore} className="flex-1 bg-white border-4 border-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white py-6 rounded-[30px] text-sm font-black uppercase tracking-widest transition-all shadow-xl active:scale-[0.98]">Update Performance Record</button>
                             ) : (
                                 <button onClick={handleSaveScore} className="flex-1 bg-emerald-600 text-white hover:bg-black py-6 rounded-[30px] text-sm font-black uppercase tracking-widest transition-all shadow-2xl shadow-emerald-200 active:scale-[0.98]">Finalize Performance Entry</button>
                             )}
@@ -206,6 +222,15 @@ const TeacherOverview = ({ user, studentsList }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Engagement Table */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <span className="w-1.5 h-6 bg-emerald-500 rounded-full inline-block"></span>
+                    Student Engagement Records
+                </h3>
+                <StudentEngagementTable role="TEACHER" />
+            </div>
         </div>
     );
 };
@@ -214,7 +239,7 @@ const TeacherDashboard = ({ user }) => {
     const [activePage, setActivePage] = useState('overview');
     const [studentsList, setStudentsList] = useState([]);
     const [selectedStudentId, setSelectedStudentId] = useState('');
-    const [formState, setFormState] = useState({ week: '', attendance: '', participation: '', assignmentStatus: 'ON_TIME' });
+    const [formState, setFormState] = useState({ week: '', attendance: '', participation: '', assignmentStatus: 'ON_TIME', testScore: 0, testTotalMarks: 100 });
     const [toast, setToast] = useState({ show: false, message: '', type: '' });
     const [hasExisting, setHasExisting] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -228,20 +253,22 @@ const TeacherDashboard = ({ user }) => {
             api.get(`/api/teacher/students/${selectedStudentId}/latest-engagement`)
                 .then(res => {
                     if (res.status === 204 || !res.data) {
-                        setFormState({ week: '', attendance: '', participation: '', assignmentStatus: 'ON_TIME' });
+                        setFormState({ week: '', attendance: '', participation: '', assignmentStatus: 'ON_TIME', testScore: 0, testTotalMarks: 100 });
                         setHasExisting(false);
                     } else {
                         setFormState({
                             week: res.data.week,
                             attendance: res.data.attendance,
                             participation: res.data.participation,
-                            assignmentStatus: res.data.assignmentStatus
+                            assignmentStatus: res.data.assignmentStatus,
+                            testScore: res.data.testScore || 0,
+                            testTotalMarks: res.data.testTotalMarks || 100
                         });
                         setHasExisting(true);
                     }
                 }).catch(console.error);
         } else {
-            setFormState({ week: '', attendance: '', participation: '', assignmentStatus: 'ON_TIME' });
+            setFormState({ week: '', attendance: '', participation: '', assignmentStatus: 'ON_TIME', testScore: 0, testTotalMarks: 100 });
             setHasExisting(false);
         }
     }, [selectedStudentId]);
@@ -268,8 +295,6 @@ const TeacherDashboard = ({ user }) => {
                 return <TeacherOverview user={user} />;
             case 'engagement':
                 return <TeacherEngagementEnter studentsList={studentsList} selectedStudentId={selectedStudentId} setSelectedStudentId={setSelectedStudentId} formState={formState} setFormState={setFormState} toast={toast} setToast={setToast} handleSaveScore={handleSaveScore} hasExisting={hasExisting} refreshTrigger={refreshTrigger} />;
-            case 'tests':
-                return <WeeklyTestManagement />;
             case 'students':
                 return (
                     <div className="flex flex-col gap-6">

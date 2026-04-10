@@ -12,8 +12,14 @@ const StudentEngagementTable = ({ studentId, role, refreshTrigger }) => {
         let isMounted = true;
         const fetchData = async () => {
             try {
-                if (role === 'TEACHER' && !studentId) {
-                    const response = await api.get(`/api/teacher/students/engagement-history`);
+                const isTeacher = role === 'TEACHER';
+                const isAdmin = role === 'ADMIN';
+
+                if ((isTeacher || isAdmin) && !studentId) {
+                    const endpoint = isAdmin 
+                        ? `/api/admin/all-students/engagement-history`
+                        : `/api/teacher/students/engagement-history`;
+                    const response = await api.get(endpoint);
                     if (isMounted) {
                         setAllStudents(response.data);
                         setLoading(false);
@@ -21,14 +27,26 @@ const StudentEngagementTable = ({ studentId, role, refreshTrigger }) => {
                     return;
                 }
 
-                const endpoint = role === 'TEACHER'
+                const endpoint = isTeacher
                     ? `/api/teacher/students/${studentId}/full-engagement`
-                    : `/api/student/full-engagement`;
-
-                const response = await api.get(endpoint);
+                    : isAdmin
+                        ? `/api/admin/all-students/engagement-history` // Admins can see all, but here we might need a specific student filter if studentId is provided. Actually let's assume if studentId is provided we can filter the allStudents list or fetch specific.
+                        : `/api/student/full-engagement`;
+                
+                // For Admin with specific studentId, we'll just find it from allStudents if we have it, or fetch.
+                // To keep it simple, if role is ADMIN and studentId is present, we'll use the same all-history and filter.
+                
+                let responseData;
+                if (isAdmin && studentId) {
+                    const res = await api.get(`/api/admin/all-students/engagement-history`);
+                    responseData = res.data.find(s => s.studentId.toString() === studentId.toString());
+                } else {
+                    const res = await api.get(endpoint);
+                    responseData = res.data;
+                }
 
                 if (isMounted) {
-                    setData(response.data);
+                    setData(responseData);
                     setLoading(false);
                 }
             } catch (error) {
@@ -81,12 +99,6 @@ const StudentEngagementTable = ({ studentId, role, refreshTrigger }) => {
 
     if (!data || !data.history || data.history.length === 0) return <div className="card text-center p-8 bg-gray-50 border-dashed">No engagement data recorded yet.</div>;
 
-    const getTestScore = (week) => {
-        const test = data.testHistory?.find(t => t.test.weekNumber === week);
-        if (!test) return { score: "—", skipped: true };
-        return { score: `${test.score.toFixed(1)} / ${test.totalMarks}`, skipped: false };
-    };
-
     const getSelfAssessment = (week) => {
         return data.assessments?.find(a => a.week === week);
     };
@@ -107,7 +119,6 @@ const StudentEngagementTable = ({ studentId, role, refreshTrigger }) => {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                     {data.history.map((record, index) => {
-                        const test = getTestScore(record.week);
                         const assessment = getSelfAssessment(record.week);
                         const mismatch = assessment && Math.abs(assessment.participationRating - record.participation) > 2;
 
@@ -140,18 +151,20 @@ const StudentEngagementTable = ({ studentId, role, refreshTrigger }) => {
                                     <span className="text-base font-bold text-emerald-700">{record.engagementScore.toFixed(1)}</span>
                                 </td>
                                 <td className="px-6 py-4 bg-blue-50/30">
-                                    <div className="flex items-center justify-between gap-2 group">
-                                        <span className={`text-sm font-bold ${test.skipped ? 'text-gray-400 italic' : 'text-blue-700'}`}>{test.score}</span>
-                                        {test.skipped && (
-                                            <div className="relative group/tooltip">
-                                                <span className="bg-red-100 text-red-700 text-[10px] font-black px-1.5 py-0.5 rounded-full cursor-help">SKIPPED</span>
-                                                <div className="absolute bottom-full right-0 mb-2 invisible group-hover/tooltip:visible bg-gray-900 text-white text-[10px] p-2 rounded shadow-lg whitespace-nowrap z-50">
-                                                    Student missed the weekly test.
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </td>
+                                     <div className="flex items-center justify-between gap-2 group">
+                                         <span className={`text-sm font-bold ${(record.testScore === null || record.testScore === 0) && (record.testTotalMarks === 0) ? 'text-gray-400 italic' : 'text-blue-700'}`}>
+                                             {record.testTotalMarks > 0 ? `${record.testScore} / ${record.testTotalMarks}` : "—"}
+                                         </span>
+                                         {record.testTotalMarks === 0 && (
+                                             <div className="relative group/tooltip">
+                                                 <span className="bg-red-100 text-red-700 text-[10px] font-black px-1.5 py-0.5 rounded-full cursor-help">PENDING</span>
+                                                 <div className="absolute bottom-full right-0 mb-2 invisible group-hover/tooltip:visible bg-gray-900 text-white text-[10px] p-2 rounded shadow-lg whitespace-nowrap z-50">
+                                                     Teacher has not entered test score.
+                                                 </div>
+                                             </div>
+                                         )}
+                                     </div>
+                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-2">
                                         {assessment ? (

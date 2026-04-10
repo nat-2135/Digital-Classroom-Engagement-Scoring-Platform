@@ -1,6 +1,7 @@
 package com.platform.models;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -195,12 +196,14 @@ public class EngagementRecord {
             return this;
         }
 
+        @NonNull
         public EngagementRecord build() {
             return new EngagementRecord(id, student, week, attendance, participation, assignmentStatus, engagementScore,
                     testScore, testTotalMarks, createdAt);
         }
     }
 
+    @NonNull
     public static EngagementRecordBuilder builder() {
         return new EngagementRecordBuilder();
     }

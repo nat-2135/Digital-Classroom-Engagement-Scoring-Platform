@@ -4,6 +4,7 @@ import com.platform.dto.EngagementDTO;
 import com.platform.models.*;
 import com.platform.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/teacher")
 @CrossOrigin("*")
+@SuppressWarnings("null")
 public class TeacherController {
     @Autowired
     private EngagementService engagementService;
@@ -71,7 +73,7 @@ public class TeacherController {
     }
 
     @GetMapping("/students/{id}/full-engagement")
-    public ResponseEntity<EngagementDTO> getStudentFullEngagement(@PathVariable Long id) {
+    public ResponseEntity<EngagementDTO> getStudentFullEngagement(@PathVariable @NonNull Long id) {
         User student = userRepository.findById(id).orElseThrow();
         EngagementDTO dto = EngagementDTO.builder()
                 .studentId(student.getId())
@@ -131,7 +133,7 @@ public class TeacherController {
     }
 
     @GetMapping("/students/{id}/latest-engagement")
-    public ResponseEntity<EngagementRecord> getLatestEngagement(@PathVariable Long id) {
+    public ResponseEntity<EngagementRecord> getLatestEngagement(@PathVariable @NonNull Long id) {
         List<EngagementRecord> history = engagementService.getStudentHistory(id);
         if (history.isEmpty()) return ResponseEntity.noContent().build();
         return ResponseEntity.ok(history.get(history.size() - 1));
@@ -155,8 +157,15 @@ public class TeacherController {
             try { participation = Integer.valueOf(request.get("participation").toString()); } catch (Exception e) {}
             
             String assignmentStatus = request.get("assignmentStatus") != null ? request.get("assignmentStatus").toString() : "NOT_SUBMITTED";
+            
+            Integer testScore = 0;
+            try { testScore = Integer.valueOf(request.get("testScore").toString()); } catch (Exception e) {}
+            
+            Integer testTotalMarks = 100;
+            try { testTotalMarks = Integer.valueOf(request.get("testTotalMarks").toString()); } catch (Exception e) {}
 
-            return ResponseEntity.ok(engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus));
+            EngagementRecord saved = engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus, testScore, testTotalMarks);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("error", "Critical Save Failure: " + e.getMessage()));
@@ -170,9 +179,11 @@ public class TeacherController {
         Double attendance = Double.valueOf(request.get("attendance").toString());
         Integer participation = Integer.valueOf(request.get("participation").toString());
         String assignmentStatus = request.get("assignmentStatus").toString();
+        Integer testScore = Integer.valueOf(request.get("testScore").toString());
+        Integer testTotalMarks = Integer.valueOf(request.get("testTotalMarks").toString());
 
         return ResponseEntity
-                .ok(engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus));
+                .ok(engagementService.saveEngagement(studentId, week, attendance, participation, assignmentStatus, testScore, testTotalMarks));
     }
 
     @PutMapping("/tests/submissions/{id}")

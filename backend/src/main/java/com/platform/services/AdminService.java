@@ -5,6 +5,7 @@ import com.platform.models.Role;
 import com.platform.models.User;
 import com.platform.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@SuppressWarnings("null")
 public class AdminService {
 
     @PersistenceContext
@@ -46,7 +48,7 @@ public class AdminService {
         return userRepository.save(user);
     }
 
-    public User updateStudent(Long id, UserRequestDTO dto) {
+    public User updateStudent(@NonNull Long id, UserRequestDTO dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found: " + id));
         user.setName(dto.getName());
@@ -57,7 +59,7 @@ public class AdminService {
         return userRepository.save(user);
     }
 
-    public void deleteStudent(Long id) {
+    public void deleteStudent(@NonNull Long id) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("Student not found: " + id);
         }
@@ -84,7 +86,7 @@ public class AdminService {
         return userRepository.save(user);
     }
 
-    public User updateTeacher(Long id, UserRequestDTO dto) {
+    public User updateTeacher(@NonNull Long id, UserRequestDTO dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Teacher not found: " + id));
         user.setName(dto.getName());
@@ -95,7 +97,7 @@ public class AdminService {
         return userRepository.save(user);
     }
 
-    public void deleteTeacher(Long id) {
+    public void deleteTeacher(@NonNull Long id) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("Teacher not found: " + id);
         }
@@ -104,7 +106,7 @@ public class AdminService {
 
     // ── Common delete helper ──────────────────────────────
 
-    private void deleteUserAndRelatedData(Long userId) {
+    private void deleteUserAndRelatedData(@NonNull Long userId) {
         // Delete all possible foreign key references using native SQL
         entityManager.createNativeQuery("DELETE FROM engagement_records WHERE student_id = :id").setParameter("id", userId).executeUpdate();
         entityManager.createNativeQuery("DELETE FROM test_submissions WHERE student_id = :id").setParameter("id", userId).executeUpdate();

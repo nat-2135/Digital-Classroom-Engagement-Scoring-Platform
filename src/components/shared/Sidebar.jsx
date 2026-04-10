@@ -34,7 +34,6 @@ const Sidebar = ({ role, activeTab, setActiveTab }) => {
             { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'students', label: 'Student Roster', icon: Users },
             { id: 'engagement', label: 'Score Entry', icon: PenTool },
-            { id: 'tests', label: 'Assessments', icon: ClipboardList },
             { id: 'atrisk', label: 'Interventions', icon: AlertCircle },
             { id: 'assessment', label: 'Self-Assessments', icon: MessageSquare },
             { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
@@ -43,7 +42,6 @@ const Sidebar = ({ role, activeTab, setActiveTab }) => {
         STUDENT: [
             { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
             { id: 'scores', label: 'My Engagement', icon: PenTool },
-            { id: 'test', label: 'Weekly Test', icon: ClipboardList },
             { id: 'feedbacks', label: 'Feedbacks', icon: MessageSquare },
             { id: 'trend', label: 'Performance', icon: BarChart3 },
             { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },

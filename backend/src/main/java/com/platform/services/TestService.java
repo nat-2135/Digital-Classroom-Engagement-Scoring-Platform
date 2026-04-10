@@ -6,6 +6,7 @@ import com.platform.models.WeeklyTest;
 import com.platform.repository.TestSubmissionRepository;
 import com.platform.repository.WeeklyTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@SuppressWarnings("null")
 public class TestService {
     @Autowired
     private WeeklyTestRepository weeklyTestRepository;
@@ -42,7 +44,7 @@ public class TestService {
         return weeklyTestRepository.findAll();
     }
 
-    public TestSubmission submitTest(Long testId, User student, String answersJson) {
+    public TestSubmission submitTest(@NonNull Long testId, User student, String answersJson) {
         WeeklyTest test = weeklyTestRepository.findById(testId).orElseThrow();
         int totalScore = 0;
         int maxPossible = 0;
@@ -86,7 +88,7 @@ public class TestService {
         return saved;
     }
 
-    public TestSubmission updateTestScore(Long submissionId, Integer newScore) {
+    public TestSubmission updateTestScore(@NonNull Long submissionId, Integer newScore) {
         TestSubmission submission = testSubmissionRepository.findById(submissionId).orElseThrow();
         submission.setScore(newScore);
         return testSubmissionRepository.save(submission);

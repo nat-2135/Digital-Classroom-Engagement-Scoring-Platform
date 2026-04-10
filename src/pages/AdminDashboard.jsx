@@ -311,6 +311,10 @@ const AdminDashboard = ({ user }) => {
                     <div className="flex flex-col gap-14 animate-in fade-in slide-in-from-bottom-5 duration-700">
                         <WelcomeCard name={user?.name} role="Administrator" />
                         <AdminInsightsPanel />
+                        <div className="flex flex-col gap-6">
+                            <h3 className="text-2xl font-bold text-gray-900 border-l-8 border-emerald-600 pl-4">Institutional Engagement Data</h3>
+                            <StudentEngagementTable role="ADMIN" />
+                        </div>
                     </div>
                 );
             case 'analytics':
@@ -335,6 +339,10 @@ const AdminDashboard = ({ user }) => {
                     <div className="flex flex-col gap-14 animate-in fade-in slide-in-from-bottom-5 duration-700">
                         <WelcomeCard name={user?.name} role="Administrator" />
                         <AdminInsightsPanel />
+                        <div className="flex flex-col gap-6">
+                            <h3 className="text-2xl font-bold text-gray-900 border-l-8 border-emerald-600 pl-4">Institutional Engagement Data</h3>
+                            <StudentEngagementTable role="ADMIN" />
+                        </div>
                     </div>
                 );
         }

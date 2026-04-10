@@ -8,6 +8,7 @@ import com.platform.repository.UserRepository;
 import com.platform.repository.EngagementRecordRepository;
 import com.platform.repository.StudentBadgeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class LeaderboardService {
     @Autowired
     private com.platform.repository.TestSubmissionRepository testSubmissionRepository;
 
-    public List<LeaderboardDTO> getClassLeaderboard(Long currentStudentId, Integer week) {
+    public List<LeaderboardDTO> getClassLeaderboard(@NonNull Long currentStudentId, Integer week) {
         List<User> students = userRepository.findByRole(Role.STUDENT);
         List<LeaderboardDTO> board = new ArrayList<>();
 
@@ -113,7 +114,7 @@ public class LeaderboardService {
         return board;
     }
 
-    public void updatePrivacy(Long studentId, boolean showName) {
+    public void updatePrivacy(@NonNull Long studentId, boolean showName) {
         User user = userRepository.findById(studentId).orElseThrow(() -> new RuntimeException("User not found"));
         user.setShowLeaderboardName(showName);
         userRepository.save(user);

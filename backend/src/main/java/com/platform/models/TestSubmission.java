@@ -1,6 +1,7 @@
 package com.platform.models;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -144,11 +145,13 @@ public class TestSubmission {
             return this;
         }
 
+        @NonNull
         public TestSubmission build() {
             return new TestSubmission(id, test, student, answers, score, totalMarks, submittedAt);
         }
     }
 
+    @NonNull
     public static TestSubmissionBuilder builder() {
         return new TestSubmissionBuilder();
     }

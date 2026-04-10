@@ -196,27 +196,44 @@ const WeeklyTest = () => {
     }, []);
 
     const startProtocol = (protocol) => {
+        console.log("Initializing Protocol Request:", protocol.title);
         let questions = [];
         try {
             questions = typeof protocol.questions === 'string' ? JSON.parse(protocol.questions) : (protocol.questions || []);
-        } catch(e) { questions = []; }
+            if (!Array.isArray(questions)) questions = [];
+        } catch(e) { 
+            console.error("Critical Protocol Parsing Failure", e);
+            questions = []; 
+        }
 
-        setActiveTest({
+        const sanitized = {
             ...protocol,
             questions: (questions || []).map(q => ({
                 id: q.id || Math.random(),
                 type: q.type || 'MC',
                 text: q.text || 'Inquiry Vector',
-                options: q.options || [],
+                options: Array.isArray(q.options) ? q.options : [],
                 correctAnswer: q.correctAnswer || ''
             }))
-        });
+        };
+
+        console.log("Setting Active Test sanitized object:", sanitized);
+        setActiveTest(sanitized);
     };
 
     if (loading) return <div className="text-center p-20 text-emerald-700 animate-pulse font-black uppercase tracking-widest text-xs italic">Synchronizing Registry...</div>;
 
+    console.log("WeeklyTest Render State:", { hasActiveTest: !!activeTest, allTestsCount: allTests.length });
+
     if (activeTest) {
-        return <TestInterface test={activeTest} onComplete={fetchData} onCancel={() => setActiveTest(null)} />;
+        return (
+            <div id="test-interface-container" className="animate-in fade-in">
+                <TestInterface test={activeTest} onComplete={fetchData} onCancel={() => {
+                    console.log("Cancelling test view");
+                    setActiveTest(null);
+                }} />
+            </div>
+        );
     }
 
     return (

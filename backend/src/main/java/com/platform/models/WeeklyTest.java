@@ -1,6 +1,7 @@
 package com.platform.models;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -185,12 +186,14 @@ public class WeeklyTest {
             return this;
         }
 
+        @NonNull
         public WeeklyTest build() {
             return new WeeklyTest(id, teacher, title, subject, weekNumber, instructions, questions, marksPerQuestion,
                     timeLimit, dueDate);
         }
     }
 
+    @NonNull
     public static WeeklyTestBuilder builder() {
         return new WeeklyTestBuilder();
     }

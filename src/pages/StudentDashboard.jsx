@@ -36,7 +36,11 @@ const StudentOverview = ({ studentData, loading }) => {
                     color="#3b82f6" />
             </div>
             <div className="flex flex-col gap-6 mt-8">
-                <h3 className="text-2xl font-bold text-gray-900 border-l-8 border-emerald-600 pl-4">My Progress</h3>
+                <h3 className="text-2xl font-bold text-gray-900 border-l-8 border-emerald-600 pl-4">Engagement Report</h3>
+                <StudentEngagementTable role="STUDENT" />
+            </div>
+            <div className="flex flex-col gap-6 mt-8">
+                <h3 className="text-2xl font-bold text-gray-900 border-l-8 border-emerald-600 pl-4">Performance Trends</h3>
                 <StudentTrendCard />
             </div>
         </div>
@@ -113,9 +117,7 @@ const StudentDashboard = ({ user }) => {
             case 'dashboard':
                 return <StudentOverview studentData={studentData} loading={loading} />;
             case 'scores':
-                return <StudentEngagementTable viewAs="student" />;
-            case 'test':
-                return <WeeklyTest />;
+                return <StudentEngagementTable role="STUDENT" />;
             case 'feedbacks':
                 return <FeedbackList />;
             case 'trend':

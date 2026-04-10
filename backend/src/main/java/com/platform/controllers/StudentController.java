@@ -16,6 +16,7 @@ import com.platform.services.LeaderboardService;
 import com.platform.services.SelfAssessmentService;
 import com.platform.services.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/student")
 @CrossOrigin("*")
+@SuppressWarnings("null")
 public class StudentController {
     @Autowired
     private EngagementService engagementService;
@@ -91,7 +93,7 @@ public class StudentController {
     }
 
     @PostMapping("/tests/{testId}/submit")
-    public ResponseEntity<?> submitTest(@PathVariable Long testId, @RequestBody TestSubmissionDTO answers) {
+    public ResponseEntity<?> submitTest(@PathVariable @NonNull Long testId, @RequestBody TestSubmissionDTO answers) {
         return ResponseEntity.ok(testService.submitTest(testId, authService.getCurrentUser(), answers.getAnswers()));
     }
 
